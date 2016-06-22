@@ -5,11 +5,17 @@
     /_/   /_/\__,_/\__, /\__, /\__/_/_.___/_/\___(_)_/ /____/
                   /____//____/                    /___/ 
 
+# Introduction
 
 pluggable.js enables you to make your Javascript code pluggable while still
 keeping sensitive objects and data private through closures.
 
-It's written with Backbone.js in mind, but does not require it or depend on it.
+It was originally written for [converse.js](https://conversejs.org), to provide
+a plugin architecture that allows 3rd party developers to extend and override
+private [backbone.js](http://backbonejs.org) classes, but it does not require
+nor depend on either library.
+
+# Usage
 
 Suppose you have the following module, containing a private method (for
 whatever reason) `showNotification` which you'd like to make overridable:
