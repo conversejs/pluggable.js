@@ -88,18 +88,23 @@ will be called once the closured object calls `initializePlugins`.
     myapp.registerplugin('my-plugin', {
 
         overrides: {
-            // overrides mentioned here will be picked up by converse.js's
-            // plugin architecture they will replace existing methods on the
+            // overrides mentioned here will be picked up by Pluggable's
+            // plugin architecture, they will replace existing methods on the
             // relevant objects or classes.
+            // 
+            // When overriding a method or function, you can still call the
+            // original as an attribute on `this._super`. To properly call it
+            // as if it was never overridden, you can call it with
+            // `.apply(this, arguments)`.
             //
-            // new functions which don't exist yet can also be added.
+            // New functions which don't exist yet can also be added.
 
             shownotification: function () {
                 /* override shownotification to also play a sound
                  */
                 playsound();
                 // call the super method so that the notification is also shown.
-                this._super.shownotification.applyt(this, arguments);
+                this._super.shownotification.apply(this, arguments);
             },
         },
 
