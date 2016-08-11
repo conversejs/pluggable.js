@@ -15,10 +15,15 @@
 }(this, function ($, _) {
     "use strict";
 
-    function Pluggable (plugged) {
+    function Pluggable (plugged, name) {
         // The Pluggable class encapsulates the plugin architecture, and gets
         // created whenver `pluggable.enable(obj);` on the object they want
         // to make pluggable.
+        if (typeof name === 'undefined') {
+            name = 'plugged';
+        }
+        this.name = name; // Name by which the now pluggable object may be
+                          // referenced on the _super obj.
         this.plugged = plugged;
         this.plugged._super = {};
         this.plugins = {};
@@ -77,8 +82,8 @@
 
         _extendObject: function (obj, attributes) {
             if (!obj.prototype._super) {
-                /* FIXME: make generic */
-                obj.prototype._super = {'converse': this.plugged };
+                obj.prototype._super = {};
+                obj.prototype._super[this.name] = this.plugged;
             }
             _.each(attributes, function (value, key) {
                 if (key === 'events') {
@@ -172,9 +177,9 @@
         }
     });
     return {
-        'enable': function (object) {
+        'enable': function (object, name) {
             // Call this method to make an object pluggable
-            return _.extend(object, {'pluggable': new Pluggable(object)});
+            return _.extend(object, {'pluggable': new Pluggable(object, name)});
         }
     };
 }));
