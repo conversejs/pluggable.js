@@ -55,8 +55,14 @@ Here's what that would look like:
     window.myapp.registerplugin('my-plugin', {
 
         overrides: {
-            // Overrides mentioned here will be picked up by pluggable.js
-            // and they will replace existing methods on the relevant objects.
+            // overrides mentioned here will be picked up by Pluggable's
+            // plugin architecture, they will replace existing methods on the
+            // relevant objects or classes.
+            // 
+            // When overriding a method or function, you can still call the
+            // original as an attribute on `this._super`. To properly call it
+            // as if it was never overridden, you can call it with
+            // `.apply(this, arguments)`.
             //
             // New functions which don't exist yet can also be added.
 
@@ -88,27 +94,15 @@ will be called once the closured object calls `initializePlugins`.
     myapp.registerplugin('my-plugin', {
 
         overrides: {
-            // overrides mentioned here will be picked up by Pluggable's
-            // plugin architecture, they will replace existing methods on the
-            // relevant objects or classes.
-            // 
-            // When overriding a method or function, you can still call the
-            // original as an attribute on `this._super`. To properly call it
-            // as if it was never overridden, you can call it with
-            // `.apply(this, arguments)`.
-            //
-            // New functions which don't exist yet can also be added.
-
-            shownotification: function () {
-                /* override shownotification to also play a sound
-                 */
-                playsound();
-                // call the super method so that the notification is also shown.
-                this._super.shownotification.apply(this, arguments);
-            },
+            /* Code here truncated for brevity, to see what would go here,
+             * refer to the example above.
+             */
         },
 
         initialize: function () {
+            // The initialize function gets called as soon as the plugin is
+            // loaded by pluggable.js's plugin machinery.
+
         }
     });
 
