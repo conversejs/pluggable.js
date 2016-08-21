@@ -21,20 +21,20 @@ Suppose you have the following module, containing a private method (for
 whatever reason) `showNotification` which you'd like to make overridable:
 
     (function () {
-        var private = {
+        var _private = {
             showNotification: function (title, text) {
-                n = new Notification(title, { body: text });
+                var n = new Notification(title, { body: text });
                 setTimeout(n.close.bind(n), 5000);
             }
         };
 
-        pluggable.enable(private);
-        private.pluggable.initializePlugins();
+        pluggable.enable(_private);
+        _private.pluggable.initializePlugins();
 
-        var public = {
-            'registerPlugin': private.pluggable.register(name, plugin)
+        var _public = {
+            'registerPlugin': _private.pluggable.register
         }
-        window.myApp = public;
+        window.myApp = _public;
     })();
 
 ## Overrides
@@ -79,6 +79,7 @@ Here's what that would look like:
                 // Call the super method so that the notification is also shown.
                 this._super.showNotification.applyt(this, arguments);
             }
+        }
     });
 
 ## Custom plugin code

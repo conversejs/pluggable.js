@@ -11,8 +11,12 @@
 // keeping sensitive objects and data private through closures.
 
 (function (root, factory) {
-    define("pluggable", ["jquery", "underscore"], factory);
-}(this, function ($, _) {
+    if (typeof define === 'function' && define.amd) {
+        define("pluggable", ["underscore"], factory);
+    } else {
+        window.pluggable = factory(_);
+    }
+}(this, function (_) {
     "use strict";
 
     function Pluggable (plugged, name) {
@@ -164,6 +168,11 @@
                 plugin.initialize.bind(plugin)(this);
             }
             this.initialized_plugins.push(plugin.__name__);
+        },
+
+        registerPlugin: function (name, plugin) {
+            plugin.__name__ = name;
+            this.plugins[name] = plugin;
         },
 
         initializePlugins: function (properties) {
