@@ -6,13 +6,13 @@
             // relevant objects or classes.
             // 
             // When overriding a method or function, you can still call the
-            // original as an attribute on `this._super`. To properly call it
+            // original as an attribute on `this.__super__`. To properly call it
             // as if it was never overridden, you can call it with
             // `.apply(this, arguments)`.
 
             showNotification: function (text) {
                 /* Override showNotification to change the color */
-                var el = this._super.showNotification.apply(this, arguments);
+                var el = this.__super__.showNotification.apply(this, arguments);
                 el.setAttribute('class', el.getAttribute('class')+' extra');
             }
 

@@ -15,7 +15,15 @@ a plugin architecture that allows 3rd party developers to extend and override
 private [backbone.js](http://backbonejs.org) classes, but it does not require
 nor depend on either library.
 
-# Usage
+# Documentation
+
+To understand how it works under the hood, read the [annotated source code](
+https://jcbrand.github.io/pluggable.js/docs/pluggable.html).
+
+The usage documentation follows below. There's also a [live demo](https://jcbrand.github.io/pluggable.js/examples/)
+of the example below.
+
+## Usage
 
 Suppose you have the following module, containing a private method (for
 whatever reason) `showNotification` which you'd like to make overridable:
@@ -39,7 +47,7 @@ whatever reason) `showNotification` which you'd like to make overridable:
     })();
 ```
 
-## Overrides
+### Overrides
 
 Private (closured) objects can be overridden or modified by plugins. When multiple
 plugins override a method of a private object, then a method call can travel up
@@ -86,7 +94,7 @@ Here's what that would look like:
     });
 ```
 
-## Custom plugin code
+### Custom plugin code
 
 Besides overriding private objects and methods, plugins might also want to
 create their own objects and functions independent of the overridden object but
