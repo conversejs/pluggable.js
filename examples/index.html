@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Pluggable.js</title>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Pluggable.js: make your code pluggable." />
+    <meta name="author" content="JC Brand" />
+    <meta name="keywords" content="plugins" />
+    <script type="text/javascript" src="../node_modules/underscore/underscore.js"></script>
+    <script type="text/javascript" src="../pluggable.js"></script>
+    <script type="text/javascript" src="app.js"></script>
+    <script type="text/javascript" src="plugin.js"></script>
+    <style type="text/css">
+        body {
+            font-family: arial;
+            color: #444;
+            margin: 5% 10%;
+        }
+        h1 {
+            margin: 2em 0 0.5em 0;
+        }
+        input[type="button"] {
+            padding: 10px;
+            margin: 10px;
+        }
+        p {
+            padding: 0.25em;
+        }
+        fieldset {
+            padding: 0.5em;
+            border: none;
+        }
+        .notification {
+            border-radius: 0.5em;
+            border: 1px solid rgb(6,100,255);
+            background-color: rgba(6,100,255,0.1);
+        }
+        .notification.extra {
+            border: 1px solid rgb(100,6,255);
+            background-color: rgba(100,6,255,0.1);
+        }
+    </style>
+</head>
+<body onload="myApp.initialize()">
+    <h1>Pluggable.js example</h1>
+    <p id="notifications"></p>
+
+    <p>
+        Here's a small, contrived example which shows to use pluggable.js to
+        make a private, closured Javascript object pluggable.
+    </p>
+
+    <p> 
+        There are two Javasript files included in this page,
+        <strong>app.js</strong> and <strong>plugin.js</strong>.
+        Fee free to open them up and see how they look inside. The code has
+        explanatory comments and is also explained in the README of
+        pluggable.js.
+    </p>
+
+    <p>
+        In app.js, there is a private object called <strong>_private</strong>,
+        with a method <strong>showNotification</strong>, which cannot be
+        accessed by code outside of that private object.
+    </p>
+
+    </p>
+        However, since this private object uses pluggable.js, we can now write
+        a plugin which does override this method, even though it's closured.
+        The plugin code is contained in <strong>plugin.js</strong>.
+    </p>
+
+    <fieldset>
+        <input type="button" id="notify" value="Click me to show a notification"/>
+        <input type="button" id="enable" onclick="myApp.enableThePlugins()" value="Click me to enable the plugin"/>
+    </fieldset>
+</body>
+</html>

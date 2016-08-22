@@ -1,0 +1,29 @@
+{
+  "name": "pluggable.js",
+  "version": "0.0.1",
+  "description": "Lets you make your JS code pluggable while still keeping sensitive objects and data private through closures.",
+  "main": "pluggable.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jcbrand/pluggable.js.git"
+  },
+  "keywords": [
+    "plugin"
+  ],
+  "author": "JC Brand <jc@opkode.com> (http://opkode.com/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jcbrand/pluggable.js/issues"
+  },
+  "homepage": "https://github.com/jcbrand/pluggable.js#readme",
+  "devDependencies": {
+    "docco": "^0.7.0",
+    "http-server": "^0.9.0"
+  },
+  "dependencies": {
+    "underscore": "~1.8.3"
+  }
+}
