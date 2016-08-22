@@ -20,6 +20,7 @@ nor depend on either library.
 Suppose you have the following module, containing a private method (for
 whatever reason) `showNotification` which you'd like to make overridable:
 
+``` Javascript
     (function () {
         var _private = {
             showNotification: function (title, text) {
@@ -36,6 +37,7 @@ whatever reason) `showNotification` which you'd like to make overridable:
         }
         window.myApp = _public;
     })();
+```
 
 ## Overrides
 
@@ -52,6 +54,7 @@ the original method so that the notification is displayed.
 
 Here's what that would look like:
 
+``` Javascript
     window.myapp.registerplugin('my-plugin', {
 
         overrides: {
@@ -81,6 +84,7 @@ Here's what that would look like:
             }
         }
     });
+```
 
 ## Custom plugin code
 
@@ -91,7 +95,7 @@ still having access to it.
 For that, there is the `initialize` method, which if available on the plugin,
 will be called once the closured object calls `initializePlugins`.
 
-
+``` Javascript
     myapp.registerplugin('my-plugin', {
 
         overrides: {
@@ -106,5 +110,4 @@ will be called once the closured object calls `initializePlugins`.
 
         }
     });
-
-    
+```
