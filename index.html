@@ -8,7 +8,7 @@
     <link rel="stylesheet" type="text/css" href="stylesheets/github-dark.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
 
-    <title>Pluggable.js by jcbrand</title>
+    <title>pluggable.js by jcbrand</title>
   </head>
 
   <body>
@@ -48,7 +48,15 @@ private <a href="http://backbonejs.org">backbone.js</a> classes, but it does not
 nor depend on either library.</p>
 
 <h1>
-<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h1>
+<a id="documentation" class="anchor" href="#documentation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Documentation</h1>
+
+<p>To understand how it works under the hood, read the <a href="https://jcbrand.github.io/pluggable.js/docs/pluggable.html">annotated source code</a>.</p>
+
+<p>The usage documentation follows below. There's also a <a href="https://jcbrand.github.io/pluggable.js/examples/">live demo</a>
+of the example below.</p>
+
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2>
 
 <p>Suppose you have the following module, containing a private method (for
 whatever reason) <code>showNotification</code> which you'd like to make overridable:</p>
@@ -70,8 +78,8 @@ whatever reason) <code>showNotification</code> which you'd like to make overrida
         <span class="pl-c1">window</span>.<span class="pl-smi">myApp</span> <span class="pl-k">=</span> _public;
     })();</pre></div>
 
-<h2>
-<a id="overrides" class="anchor" href="#overrides" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Overrides</h2>
+<h3>
+<a id="overrides" class="anchor" href="#overrides" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Overrides</h3>
 
 <p>Private (closured) objects can be overridden or modified by plugins. When multiple
 plugins override a method of a private object, then a method call can travel up
@@ -116,8 +124,8 @@ the original method so that the notification is displayed.</p>
         }
     });</pre></div>
 
-<h2>
-<a id="custom-plugin-code" class="anchor" href="#custom-plugin-code" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Custom plugin code</h2>
+<h3>
+<a id="custom-plugin-code" class="anchor" href="#custom-plugin-code" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Custom plugin code</h3>
 
 <p>Besides overriding private objects and methods, plugins might also want to
 create their own objects and functions independent of the overridden object but
@@ -142,5 +150,7 @@ will be called once the closured object calls <code>initializePlugins</code>.</p
     });</pre></div>
       </section>
     </div>
+
+    
   </body>
 </html>
