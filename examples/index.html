@@ -8,7 +8,7 @@
     <meta name="description" content="Pluggable.js: make your code pluggable." />
     <meta name="author" content="JC Brand" />
     <meta name="keywords" content="plugins" />
-    <script type="text/javascript" src="../node_modules/underscore/underscore.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
     <script type="text/javascript" src="../pluggable.js"></script>
     <script type="text/javascript" src="app.js"></script>
     <script type="text/javascript" src="plugin.js"></script>
@@ -33,6 +33,7 @@
             border: none;
         }
         .notification {
+            padding: 0.5em;
             border-radius: 0.5em;
             border: 1px solid rgb(6,100,255);
             background-color: rgba(6,100,255,0.1);
@@ -46,12 +47,11 @@
 <body onload="myApp.initialize()">
     <h1>Pluggable.js example</h1>
     <p id="notifications"></p>
-
     <p>
-        Here's a small, contrived example which shows to use pluggable.js to
+        Here's a small example which shows to use pluggable.js to
         make a private, closured Javascript object pluggable.
     </p>
-
+    
     <p> 
         There are two Javasript files included in this page,
         <strong>app.js</strong> and <strong>plugin.js</strong>.
