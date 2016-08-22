@@ -7,7 +7,7 @@
                  /____//____/                    /___/
  */
 
-// Pluggable.js enables you to make your Javascript code pluggable while still
+// Pluggable.js lets you to make your Javascript code pluggable while still
 // keeping sensitive objects and data private through closures.
 
 /* Start AMD header */

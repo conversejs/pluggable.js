@@ -48,7 +48,7 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
-              <p>Pluggable.js enables you to make your Javascript code pluggable while still
+              <p>Pluggable.js lets you to make your Javascript code pluggable while still
 keeping sensitive objects and data private through closures.</p>
 
             </div>
@@ -80,14 +80,14 @@ that you want to make pluggable.
 You can also see it as the thing into which the plugins are plugged.
 It takes two parameters, first, the object being made pluggable, and
 then the name by which the pluggable object may be referenced on the
-_super object (inside overrides).</p>
+<strong>super</strong> object (inside overrides).</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">PluginSocket</span> (<span class="hljs-params">plugged, name</span>) </span>{
         <span class="hljs-keyword">this</span>.name = name; 
         <span class="hljs-keyword">this</span>.plugged = plugged;
-        <span class="hljs-keyword">this</span>.plugged._super = {};
+        <span class="hljs-keyword">this</span>.plugged.__super__ = {};
         <span class="hljs-keyword">this</span>.plugins = {};
         <span class="hljs-keyword">this</span>.initialized_plugins = [];
     }</pre></div></div>
@@ -127,15 +127,15 @@ original method.</p>
             
             <div class="content"><div class='highlight'><pre>        wrappedOverride: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">key, value, super_method</span>) </span>{
             <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> super_method === <span class="hljs-string">"function"</span>) {
-                <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> <span class="hljs-keyword">this</span>._super === <span class="hljs-string">"undefined"</span>) {
+                <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> <span class="hljs-keyword">this</span>.__super__ === <span class="hljs-string">"undefined"</span>) {
                     <span class="hljs-comment">/* We're not on the context of the plugged object.
                      * This can happen when the overridden method is called via
                      * an event handler. In this case, we simply tack on the
-                     * _super obj.
+                     * __super__ obj.
                      */</span>
-                    <span class="hljs-keyword">this</span>._super = {};
+                    <span class="hljs-keyword">this</span>.__super__ = {};
                 }
-                <span class="hljs-keyword">this</span>._super[key] = super_method.bind(<span class="hljs-keyword">this</span>);
+                <span class="hljs-keyword">this</span>.__super__[key] = super_method.bind(<span class="hljs-keyword">this</span>);
             }
             <span class="hljs-keyword">return</span> value.apply(<span class="hljs-keyword">this</span>, _.rest(<span class="hljs-built_in">arguments</span>, <span class="hljs-number">3</span>));
         },</pre></div></div>
@@ -152,14 +152,14 @@ original method.</p>
               <p><code>_overrideAttribute</code> overrides an attribute on the original object
 (the thing being plugged into).</p>
 <p>If the attribute being overridden is a function, then the original
-function will still be available via the <code>_super</code> attribute.</p>
+function will still be available via the <code>__super__</code> attribute.</p>
 <p>If the same function is being overridden multiple times, then
 the original function will be available at the end of a chain of
 functions, starting from the most recent override, all the way
 back to the original function, each being referenced by the
-previous’ _super attribute.</p>
+previous’ <strong>super</strong> attribute.</p>
 <p>For example:</p>
-<p><code>plugin2.MyFunc._super.myFunc =&gt; plugin1.MyFunc._super.myFunc =&gt; original.myFunc</code></p>
+<p><code>plugin2.MyFunc.__super__.myFunc =&gt; plugin1.MyFunc.__super__.myFunc =&gt; original.myFunc</code></p>
 
             </div>
             
@@ -176,9 +176,9 @@ previous’ _super attribute.</p>
         },
 
         _extendObject: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">obj, attributes</span>) </span>{
-            <span class="hljs-keyword">if</span> (!obj.prototype._super) {
-                obj.prototype._super = {};
-                obj.prototype._super[<span class="hljs-keyword">this</span>.name] = <span class="hljs-keyword">this</span>.plugged;
+            <span class="hljs-keyword">if</span> (!obj.prototype.__super__) {
+                obj.prototype.__super__ = {};
+                obj.prototype.__super__[<span class="hljs-keyword">this</span>.name] = <span class="hljs-keyword">this</span>.plugged;
             }
             _.each(attributes, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value, key</span>) </span>{
                 <span class="hljs-keyword">if</span> (key === <span class="hljs-string">'events'</span>) {
@@ -385,7 +385,7 @@ which will be attached to the plugins.</p>
 <ul>
 <li><code>object</code>: The object that gets made pluggable.</li>
 <li><code>name</code>: The string name by which the now pluggable object
-  may be referenced on the _super obj (in overrides).
+  may be referenced on the <strong>super</strong> obj (in overrides).
   The default value is “plugged”.</li>
 <li><code>attrname</code>: The string name of the attribute on the now
   pluggable object, which refers to the PluginSocket instance

@@ -7,7 +7,7 @@
 
 # Introduction
 
-pluggable.js enables you to make your Javascript code pluggable while still
+pluggable.js lets you make your JS code pluggable while still
 keeping sensitive objects and data private through closures.
 
 It was originally written for [converse.js](https://conversejs.org), to provide
