@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-dark.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <title>Pluggable.js by jcbrand</title>
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <h1>Pluggable.js</h1>
+        <h2>Lets you make your JS code pluggable while still keeping sensitive objects and data private through closures.</h2>
+
+        <section id="downloads">
+          <a href="https://github.com/jcbrand/pluggable.js/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/jcbrand/pluggable.js/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/jcbrand/pluggable.js" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <pre><code>    ____  __                        __    __         _
+   / __ \/ /_  __ ___   ___  ____ _/ /_  / /__      (_)____
+  / /_/ / / / / / __ \/ __ \/ __/ / __ \/ / _ \    / / ___/
+ / ____/ / /_/ / /_/ / /_/ / /_/ / /_/ / /  __/   / (__  )
+/_/   /_/\__,_/\__, /\__, /\__/_/_.___/_/\___(_)_/ /____/
+              /____//____/                    /___/ 
+</code></pre>
+
+<h1>
+<a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Introduction</h1>
+
+<p>pluggable.js lets you make your JS code pluggable while still
+keeping sensitive objects and data private through closures.</p>
+
+<p>It was originally written for <a href="https://conversejs.org">converse.js</a>, to provide
+a plugin architecture that allows 3rd party developers to extend and override
+private <a href="http://backbonejs.org">backbone.js</a> classes, but it does not require
+nor depend on either library.</p>
+
+<h1>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h1>
+
+<p>Suppose you have the following module, containing a private method (for
+whatever reason) <code>showNotification</code> which you'd like to make overridable:</p>
+
+<div class="highlight highlight-source-js"><pre>    (<span class="pl-k">function</span> () {
+        <span class="pl-k">var</span> _private <span class="pl-k">=</span> {
+            <span class="pl-en">showNotification</span><span class="pl-k">:</span> <span class="pl-k">function</span> (<span class="pl-smi">title</span>, <span class="pl-smi">text</span>) {
+                <span class="pl-k">var</span> n <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Notification</span>(title, { body<span class="pl-k">:</span> text });
+                <span class="pl-c1">setTimeout</span>(<span class="pl-smi">n</span>.<span class="pl-smi">close</span>.<span class="pl-en">bind</span>(n), <span class="pl-c1">5000</span>);
+            }
+        };
+
+        <span class="pl-smi">pluggable</span>.<span class="pl-en">enable</span>(_private);
+        <span class="pl-smi">_private</span>.<span class="pl-smi">pluggable</span>.<span class="pl-en">initializePlugins</span>();
+
+        <span class="pl-k">var</span> _public <span class="pl-k">=</span> {
+            <span class="pl-s"><span class="pl-pds">'</span>registerPlugin<span class="pl-pds">'</span></span><span class="pl-k">:</span> <span class="pl-smi">_private</span>.<span class="pl-smi">pluggable</span>.<span class="pl-smi">register</span>
+        }
+        <span class="pl-c1">window</span>.<span class="pl-smi">myApp</span> <span class="pl-k">=</span> _public;
+    })();</pre></div>
+
+<h2>
+<a id="overrides" class="anchor" href="#overrides" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Overrides</h2>
+
+<p>Private (closured) objects can be overridden or modified by plugins. When multiple
+plugins override a method of a private object, then a method call can travel up
+through all the overrides all the way to the original overridden method.</p>
+
+<p>This is possible because pluggable.js enables the calling of a super method
+through the <code>_super</code> attribute.</p>
+
+<p>For example, imagine we have an object being overridden which has a method
+<code>showNotification</code>. In our override we want to also play a sound, and then call
+the original method so that the notification is displayed.</p>
+
+<p>Here's what that would look like:</p>
+
+<div class="highlight highlight-source-js"><pre>    <span class="pl-c1">window</span>.<span class="pl-smi">myapp</span>.<span class="pl-en">registerplugin</span>(<span class="pl-s"><span class="pl-pds">'</span>my-plugin<span class="pl-pds">'</span></span>, {
+
+        overrides<span class="pl-k">:</span> {
+            <span class="pl-c">// overrides mentioned here will be picked up by Pluggable's</span>
+            <span class="pl-c">// plugin architecture, they will replace existing methods on the</span>
+            <span class="pl-c">// relevant objects or classes.</span>
+            <span class="pl-c">// </span>
+            <span class="pl-c">// When overriding a method or function, you can still call the</span>
+            <span class="pl-c">// original as an attribute on `this._super`. To properly call it</span>
+            <span class="pl-c">// as if it was never overridden, you can call it with</span>
+            <span class="pl-c">// `.apply(this, arguments)`.</span>
+            <span class="pl-c">//</span>
+            <span class="pl-c">// New functions which don't exist yet can also be added.</span>
+
+            <span class="pl-en">playSound</span><span class="pl-k">:</span> <span class="pl-k">function</span> () {
+                <span class="pl-c">// Please imagine there's code to play a sound here...</span>
+                <span class="pl-c">// This method doesn't exist on the original object being</span>
+                <span class="pl-c">// overriden here.</span>
+            },
+
+            <span class="pl-en">showNotification</span><span class="pl-k">:</span> <span class="pl-k">function</span> () {
+                <span class="pl-c">/* Override showNotification to also play a sound</span>
+<span class="pl-c">                 */</span>
+                <span class="pl-en">playSound</span>();
+                <span class="pl-c">// Call the super method so that the notification is also shown.</span>
+                <span class="pl-v">this</span>.<span class="pl-smi">_super</span>.<span class="pl-smi">showNotification</span>.<span class="pl-en">applyt</span>(<span class="pl-v">this</span>, <span class="pl-v">arguments</span>);
+            }
+        }
+    });</pre></div>
+
+<h2>
+<a id="custom-plugin-code" class="anchor" href="#custom-plugin-code" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Custom plugin code</h2>
+
+<p>Besides overriding private objects and methods, plugins might also want to
+create their own objects and functions independent of the overridden object but
+still having access to it.</p>
+
+<p>For that, there is the <code>initialize</code> method, which if available on the plugin,
+will be called once the closured object calls <code>initializePlugins</code>.</p>
+
+<div class="highlight highlight-source-js"><pre>    <span class="pl-smi">myapp</span>.<span class="pl-en">registerplugin</span>(<span class="pl-s"><span class="pl-pds">'</span>my-plugin<span class="pl-pds">'</span></span>, {
+
+        overrides<span class="pl-k">:</span> {
+            <span class="pl-c">/* Code here truncated for brevity, to see what would go here,</span>
+<span class="pl-c">             * refer to the example above.</span>
+<span class="pl-c">             */</span>
+        },
+
+        <span class="pl-en">initialize</span><span class="pl-k">:</span> <span class="pl-k">function</span> () {
+            <span class="pl-c">// The initialize function gets called as soon as the plugin is</span>
+            <span class="pl-c">// loaded by pluggable.js's plugin machinery.</span>
+
+        }
+    });</pre></div>
+      </section>
+    </div>
+
+    
+  </body>
+</html>
