@@ -19,13 +19,11 @@
 }(this, function (_) {
     "use strict";
 
-    function Pluggable (plugged, name) {
-        // The Pluggable class encapsulates the plugin architecture, and gets
+    function PluginSocket (plugged, name) {
+        // The PluginSocket class encapsulates the plugin architecture, and gets
         // created whenver `pluggable.enable(obj);` on the object they want
         // to make pluggable.
-        if (typeof name === 'undefined') {
-            name = 'plugged';
-        }
+        // You can also see it as the thing into which the plugins are plugged.
         this.name = name; // Name by which the now pluggable object may be
                           // referenced on the _super obj.
         this.plugged = plugged;
@@ -34,8 +32,8 @@
         this.initialized_plugins = [];
     }
 
-    _.extend(Pluggable.prototype, {
-        // Now we add methods to the Pluggable class by adding them to its
+    _.extend(PluginSocket.prototype, {
+        // Now we add methods to the PluginSocket class by adding them to its
         // prototype.
 
         wrappedOverride: function (key, value, super_method) {
@@ -137,6 +135,8 @@
         },
 
         applyOverrides: function (plugin) {
+            // Called by initializePlugin. Applies any and all overrides
+            // defined on any of the plugins.
             _.each(Object.keys(plugin.overrides || {}), function (key) {
                 // We automatically override all methods and Backbone views and
                 // models that are in the "overrides" namespace.
@@ -154,6 +154,8 @@
         },
 
         initializePlugin: function (plugin) {
+            // Apply the overrides (if any) defined on all the registered
+            // plugins and then call the initialize method on each one.
             if (_.contains(this.initialized_plugins, plugin.__name__)) {
                 // Don't initialize plugins twice, otherwise we get
                 // infinite recursion in overridden methods.
@@ -171,6 +173,8 @@
         },
 
         registerPlugin: function (name, plugin) {
+            // Register (or insert) a plugin, but adding it to the `plugins`
+            // map on the PluginSocket instance.
             plugin.__name__ = name;
             this.plugins[name] = plugin;
         },
@@ -186,9 +190,25 @@
         }
     });
     return {
-        'enable': function (object, name) {
-            // Call this method to make an object pluggable
-            return _.extend(object, {'pluggable': new Pluggable(object, name)});
+        'enable': function (object, name, attrname) {
+            // Call this method to make the passed in object pluggable
+            // It takes three parameters:
+            // - object: The object that gets made pluggable.
+            // - name: The string name by which the now pluggable object
+            //     may be referenced on the _super obj (in overrides).
+            //     The default value is "plugged".
+            // - attrname: The string name of the attribute on the now
+            //     pluggable object, which refers to the PluginSocket instance
+            //     that gets created.
+            if (typeof attrname === "undefined") {
+                attrname = "pluginSocket";
+            }
+            if (typeof name === 'undefined') {
+                name = 'plugged';
+            }
+            var ref = {};
+            ref[attrname] = new PluginSocket(object, name);
+            return _.extend(object, ref);
         }
     };
 }));

@@ -9,33 +9,34 @@
             // original as an attribute on `this._super`. To properly call it
             // as if it was never overridden, you can call it with
             // `.apply(this, arguments)`.
-            //
-            // New functions which don't exist yet can also be added.
 
-            playSound: function () {
-                // Please imagine there's code to play a sound here...
-                // This method doesn't exist on the original object being
-                // overriden here.
-            },
-
-            showNotification: function () {
-                /* Override showNotification to also play a sound
-                    */
-                // Call the super method first
-                this._super.showNotification.apply(this, arguments);
-                // Then we add our custom code
-
-                var el = document.createElement('p');
-                el.setAttribute('class', 'notification extra');
-                el.appendChild(document.createTextNode(
-                    "Here's another notification that was added by the plugin!"));
-                document.getElementById('notifications').appendChild(el);
+            showNotification: function (text) {
+                /* Override showNotification to change the color */
+                var el = this._super.showNotification.apply(this, arguments);
+                el.setAttribute('class', el.getAttribute('class')+' extra');
             }
+
+            // BTW, new functions which don't exist yet can also be added.
         },
 
-        initialize: function () {
+        initialize: function (socket) {
             // The initialize function gets called as soon as the plugin is
             // loaded by pluggable.js's plugin machinery.
+
+            // We are passed in an instance of the  `PluginSocket`, which
+            // encapsulates the plugin architecture and gets created when
+            // `pluggable.enable` is called on an object.
+
+            // It's also accessible via the `pluginSocket` attribute, on the
+            // object that was passed to `pluggable.enable`.
+
+            // You can get hold of the private object which is made pluggable
+            // via the socket, with the the `plugged` attribute.
+            // Once you have hold of this object, you can call it's methods,
+            // which are otherwise not available.
+            socket.plugged.showNotification(
+                "The plugin has been enabled. Notifications are now a different color."
+            );
         }
     });
 })();
