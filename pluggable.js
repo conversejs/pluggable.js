@@ -27,11 +27,11 @@
     // You can also see it as the thing into which the plugins are plugged.
     // It takes two parameters, first, the object being made pluggable, and
     // then the name by which the pluggable object may be referenced on the
-    // _super object (inside overrides).
+    // __super__ object (inside overrides).
     function PluginSocket (plugged, name) {
         this.name = name; 
         this.plugged = plugged;
-        this.plugged._super = {};
+        this.plugged.__super__ = {};
         this.plugins = {};
         this.initialized_plugins = [];
     }
@@ -47,15 +47,15 @@
         // original method.
         wrappedOverride: function (key, value, super_method) {
             if (typeof super_method === "function") {
-                if (typeof this._super === "undefined") {
+                if (typeof this.__super__ === "undefined") {
                     /* We're not on the context of the plugged object.
                      * This can happen when the overridden method is called via
                      * an event handler. In this case, we simply tack on the
-                     * _super obj.
+                     * __super__ obj.
                      */
-                    this._super = {};
+                    this.__super__ = {};
                 }
-                this._super[key] = super_method.bind(this);
+                this.__super__[key] = super_method.bind(this);
             }
             return value.apply(this, _.rest(arguments, 3));
         },
@@ -64,17 +64,17 @@
         // (the thing being plugged into).
         //
         // If the attribute being overridden is a function, then the original
-        // function will still be available via the `_super` attribute.
+        // function will still be available via the `__super__` attribute.
         //
         // If the same function is being overridden multiple times, then
         // the original function will be available at the end of a chain of
         // functions, starting from the most recent override, all the way
         // back to the original function, each being referenced by the
-        // previous' _super attribute.
+        // previous' __super__ attribute.
         //
         // For example:
         //
-        // `plugin2.MyFunc._super.myFunc => plugin1.MyFunc._super.myFunc => original.myFunc`
+        // `plugin2.MyFunc.__super__.myFunc => plugin1.MyFunc.__super__.myFunc => original.myFunc`
         _overrideAttribute: function (key, plugin) {
             var value = plugin.overrides[key];
             if (typeof value === "function") {
@@ -88,9 +88,9 @@
         },
 
         _extendObject: function (obj, attributes) {
-            if (!obj.prototype._super) {
-                obj.prototype._super = {};
-                obj.prototype._super[this.name] = this.plugged;
+            if (!obj.prototype.__super__) {
+                obj.prototype.__super__ = {};
+                obj.prototype.__super__[this.name] = this.plugged;
             }
             _.each(attributes, function (value, key) {
                 if (key === 'events') {
@@ -214,7 +214,7 @@
         // It takes three parameters:
         // - `object`: The object that gets made pluggable.
         // - `name`: The string name by which the now pluggable object
-        //     may be referenced on the _super obj (in overrides).
+        //     may be referenced on the __super__ obj (in overrides).
         //     The default value is "plugged".
         // - `attrname`: The string name of the attribute on the now
         //     pluggable object, which refers to the PluginSocket instance
