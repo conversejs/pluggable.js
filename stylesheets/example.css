@@ -3,7 +3,7 @@ input[type="button"] {
     margin: 10px;
 }
 input.btn-example {
-    color: transparent;
+    background-color: darkcyan;
 }
 input[disabled] {
     color: lightgrey;
