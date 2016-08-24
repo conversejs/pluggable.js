@@ -7,115 +7,254 @@
 
 # Introduction
 
-pluggable.js lets you make your JS code pluggable while still
+pluggable.js lets you make your JS project extendable via plugins, while still
 keeping sensitive objects and data private through closures.
 
 It was originally written for [converse.js](https://conversejs.org), to provide
 a plugin architecture that allows 3rd party developers to extend and override
-private [backbone.js](http://backbonejs.org) classes, but it does not require
-nor depend on either library.
+private objects and [backbone.js](http://backbonejs.org) classes, but it does not
+require nor depend on either library.
+
+# Dependencies
+
+Currently pluggable.js depends on [underscore.js](http://underscorejs.org) or
+[lodash.js](http://lodash.com), however if there is enough demand for this
+dependency to be dropped I might do so later on.
 
 # Documentation
 
 To understand how it works under the hood, read the [annotated source code](
 https://jcbrand.github.io/pluggable.js/docs/pluggable.html).
 
-The usage documentation follows below. There's also a [live demo](https://jcbrand.github.io/pluggable.js/examples/)
-of the example below.
+The usage documentation with example code follows below.
+There's also a [live demo](https://jcbrand.github.io/pluggable.js/example)
+of the example code.
 
 ## Usage
 
-Suppose you have the following module, containing a private method (for
-whatever reason) `showNotification` which you'd like to make overridable:
+*Please note: The code in pluggable.js and all the examples to follow use the
+ES5 version of Javascript.*
+
+Suppose you have a module with two private methods, `_showNotification` and `_fadeOut`.
+Let's just assume for the sake of illustration that there's a good reason why these
+methods are private.
+
+What we want to do, is to make this module pluggable. In other words, we want
+people to be able to write plugins for this module, in which they can:
+
+- Access the closured scope of this module.
+- Add new methods to the module.
+- Override or extend existng methods (private or public) on this module.
+
+To make the module pluggable, we simply call `pluggable.enable(module);`.
+Once we've made this call, the `module` object will have a new property
+`pluginSocket`, which you can think of as the thing into which the plugins are
+plugged into. It is an instance of `PluginSocket`, which represents the plugin
+architecture and manages all the plugins.
+
+Additionally, we need to expose some way for plugins to register themselves.
+Since the module itself is private, we'll need to expose the `registerPlugin`
+method on the `pluginSocket` via a public method.
+
+And then finally, once all plugins have been registered, they need to be
+initialized by calling `initializePlugins` on the `PluginSocket` instance.
+
+For example:
 
 ``` Javascript
+    module.pluginSocket.initializePlugins();
+```
+
+Let's now look at the code for our module (which will go into a file called `app.js`):
+
+``` Javascript
+    // An example application, used to demonstrate how pluggable.js can
+    // allow a module to be made pluggable.
     (function () {
-        var _private = {
-            showNotification: function (title, text) {
-                var n = new Notification(title, { body: text });
-                setTimeout(n.close.bind(n), 5000);
-            }
+        var module = this;
+
+        // A private method, not available outside the scope of this module.
+        module._showNotification = function (text) {
+            /* Displays a notification message */
+            var el = document.createElement('p');
+            el.setAttribute('class', 'notification');
+            el.appendChild(document.createTextNode(text));
+            el = document.getElementById('notifications').appendChild(el);
+            setTimeout(_.partial(module._fadeOut, el), 3000);
+            return el;
         };
 
-        pluggable.enable(_private);
-        _private.pluggable.initializePlugins();
+        // Another private method, not available outside the scope of this module.
+        module._fadeOut = function (el) {
+            /* Fades out the passed in DOM element. */
+            el.style.opacity = 1;
+            (function fade() {
+                if ((el.style.opacity -= 0.1) < 0) {
+                    el.remove();
+                } else {
+                    setTimeout(fade, 25);
+                }
+            })();
+        };
 
+        // Initialize this module.
+        // -----------------------
+        // There are two buttons for which we register event handlers.
+        //
+        // This will be a public method.
+        module.initialize = function () {
+            var notify_el = document.getElementById('notify');
+            notify_el.addEventListener('click', function () {
+                module._showNotification('This is a notification.');
+            });
+
+            var enable_el = document.getElementById('enable');
+            enable_el.addEventListener('click', function () {
+                this.setAttribute('disabled', 'disabled');
+                module.pluginSocket.initializePlugins();
+            });
+        };
+
+        // Register a plugin for this module.
+        // ----------------------------------
+        // This is a wrapper method which defers to the `registerPlugin` method
+        // of pluggable.js, which is on the `pluginSocket` property of the
+        // private `module` object that was made pluggable, via
+        // `pluggable.enable(module).
+        //
+        // This will be a public method.
+        module.registerPlugin = function (name, plugin) {
+            module.pluginSocket.registerPlugin(name, plugin);
+        };
+
+        // Calling `pluggable.enable` on the closured `module` object, will make it
+        // pluggable. Additionally, it will get the `pluginSocket` attribute, which
+        // refers to the object that the plugins get plugged into.
+        pluggable.enable(module);
+
+        // Declare the two public methods
         var _public = {
-            'registerPlugin': _private.pluggable.register
-        }
+            'initialize': module.initialize,
+            'registerPlugin': module.registerPlugin
+        };
         window.myApp = _public;
+        return _public;
     })();
 ```
 
-### Overrides
+### Creating the plugin
 
-Private (closured) objects can be overridden or modified by plugins. When multiple
-plugins override a method of a private object, then a method call can travel up
-through all the overrides all the way to the original overridden method.
+So, as you can see in the example above, the module has a private method
+`_showNotification`, which will show a notification message in the page.
 
-This is possible because pluggable.js enables the calling of a super method
-through the `_super` attribute.
+Let's now create a plugin which overrides this method, so that we can modify the
+way the notification message will be displayed.
 
-For example, imagine we have an object being overridden which has a method
-`showNotification`. In our override we want to also play a sound, and then call
-the original method so that the notification is displayed.
+By the way, multiple plugins can override the same method. As long as
+each overriding method calls the original method, via the `__super__` property,
+the method call will travel up through all the overrides (in the reverse order
+in which the plugins were registered) back to the original method.
 
-Here's what that would look like:
+The way to call the method being overridden, is like this:
 
 ``` Javascript
-    window.myapp.registerplugin('my-plugin', {
-
-        overrides: {
-            // overrides mentioned here will be picked up by Pluggable's
-            // plugin architecture, they will replace existing methods on the
-            // relevant objects or classes.
-            // 
-            // When overriding a method or function, you can still call the
-            // original as an attribute on `this._super`. To properly call it
-            // as if it was never overridden, you can call it with
-            // `.apply(this, arguments)`.
-            //
-            // New functions which don't exist yet can also be added.
-
-            playSound: function () {
-                // Please imagine there's code to play a sound here...
-                // This method doesn't exist on the original object being
-                // overriden here.
-            },
-
-            showNotification: function () {
-                /* Override showNotification to also play a sound
-                 */
-                playSound();
-                // Call the super method so that the notification is also shown.
-                this._super.showNotification.applyt(this, arguments);
-            }
-        }
-    });
+    this.__super__.methodName.apply(this, arguments);
 ```
 
-### Custom plugin code
+where `methodName` is the name of the method. In our example, this will be
+`showNotification`.
 
-Besides overriding private objects and methods, plugins might also want to
-create their own objects and functions independent of the overridden object but
-still having access to it.
-
-For that, there is the `initialize` method, which if available on the plugin,
-will be called once the closured object calls `initializePlugins`.
+So, with that said, here's what the plugin code will look like:
 
 ``` Javascript
-    myapp.registerplugin('my-plugin', {
+(function () {
+    // We call the public `registerPlugin` method from our module in app.js
+    window.myApp.registerPlugin('my-plugin', {
 
         overrides: {
-            /* Code here truncated for brevity, to see what would go here,
-             * refer to the example above.
-             */
+            // Here you specify your overrides of methods or objects on the
+            // module that has been made pluggable.
+
+            // Override _showNotification to change the color of notification
+            // messages.
+            _showNotification: function (text) {
+                // When overriding a method, you can still call the original method
+                // via `this.__super__`. To properly call with the proper `this`
+                // context and parameters, use `.apply(this, arguments)`.
+                var el = this.__super__._showNotification.apply(this, arguments);
+
+                // Now we simply set another class on the element containing
+                // the notifications, so that they'll appear in a different
+                // color.
+                el.setAttribute('class', el.getAttribute('class')+' extra');
+            }
+
+            // BTW, new methods which don't exist yet can also be added here.
         },
 
-        initialize: function () {
+        initialize: function (socket) {
             // The initialize function gets called as soon as the plugin is
             // loaded by pluggable.js's plugin machinery.
 
+            // We are passed in an instance of the  `PluginSocket`, which
+            // represents the plugin architecture and gets created when
+            // `pluggable.enable` is called on an object.
+
+            // The `PluginSocket` instance is also accessible via the `pluginSocket`
+            // attribute, on the module that was passed to `pluggable.enable`.
+
+            // You can get hold of the module which was made pluggable
+            // via the `plugged` property of the `PluginSocket` instance.
+
+            // Once you have the module, you can access its private properties
+            // and call its private methods.
+
+            // Here, once this plugin is initialized, we show a notification.
+            socket.plugged._showNotification(
+                "The plugin has been enabled. Notifications are now a different color."
+            );
         }
     });
+})();
 ```
+### Custom plugin code
+
+The plugin has three important parts to it. Firstly, a call to register the
+plugin must be made, and then passed in with this call is an object which
+represents the plugin itself.
+
+This plugin object has an `overrides` key, which is another object containing methods
+and objects that will override similarly named methods and object properties on the
+module itself.
+
+Additionally, the `initializePlugins` method has been called on the
+`pluginSocket` instance.
+
+This happens inside our module in app.js and this methods should generally be
+called once, after all plugins have been registered and after the module being
+made pluggable has itself been initialized.
+
+In the `initialize` method, you have access the module's scope, which would
+otherwise not be available to you.
+
+So, as you can see, the plugin lets us achieve our three goals stated earlier:
+
+### Access the closured scope of this module.
+
+We have access to the module and all its properties and methods inside the
+`initialize` method of our plugin.
+
+### Add new methods to the module.
+
+We can add new methods to our module, either inside the `initialize` method of
+our plugin, or by stating them declaratively in `overrides` object.
+
+### Override or extend existng methods (private or public) on this module.
+
+We can override existing methods and object properties via the `overrides`
+object.
+
+## Example
+
+For a live example of the code above, see here:
+https://jcbrand.github.io/pluggable.js/example
