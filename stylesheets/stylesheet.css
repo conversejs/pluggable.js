@@ -12,7 +12,7 @@ body {
 
 .container {
   width: 90%;
-  max-width: 600px;
+  max-width: 800px;
   margin: 0 auto;
 }
 
@@ -46,7 +46,7 @@ header {
 header h1 {
   font-size: 30px;
   line-height: 1.5;
-  margin: 0 0 0 -40px;
+  margin: 0 0 0 -5px;
   font-weight: bold;
   font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
   color: #b5e853;
@@ -58,7 +58,7 @@ header h1 {
 }
 
 header h1:before {
-  content: "./ ";
+  content: "./";
   font-size: 24px;
 }
 
@@ -66,6 +66,11 @@ header h2 {
   font-size: 18px;
   font-weight: 300;
   color: #666;
+}
+
+code {
+    font-size: 16px;
+    color: #9774cb;
 }
 
 #downloads .btn {
