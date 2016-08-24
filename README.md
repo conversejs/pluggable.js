@@ -164,7 +164,8 @@ The way to call the method being overridden, is like this:
 where `methodName` is the name of the method. In our example, this will be
 `showNotification`.
 
-So, with that said, here's what the plugin code will look like:
+So, with that said, here's what the plugin code (which goes into the file `plugin.js`)
+will look like:
 
 ``` Javascript
 (function () {
