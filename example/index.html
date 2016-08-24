@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Pluggable.js</title>
+    <title>Pluggable.js: Demo</title>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -12,15 +12,12 @@
     <script type="text/javascript" src="../pluggable.js"></script>
     <script type="text/javascript" src="app.js"></script>
     <script type="text/javascript" src="plugin.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="../stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="../stylesheets/github-dark.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="../stylesheets/print.css" media="print">
+
     <style type="text/css">
-        body {
-            font-family: arial;
-            color: #444;
-            margin: 5% 10%;
-        }
-        h1 {
-            margin: 2em 0 0.5em 0;
-        }
         input[type="button"] {
             padding: 10px;
             margin: 10px;
@@ -39,31 +36,42 @@
             background-color: rgba(6,100,255,0.1);
         }
         .notification.extra {
-            border: 1px solid rgb(100,6,255);
+            border: 1px solid rgb(500,6,255);
             background-color: rgba(100,6,255,0.1);
         }
     </style>
 </head>
 <body onload="myApp.initialize()">
-    <h1>Pluggable.js example</h1>
-    <p id="notifications"></p>
-    <p>
-        Here's a small example which shows to use pluggable.js to
-        make a private, closured Javascript object pluggable.
-    </p>
-    
-    <p> 
-        There are two Javasript files included in this page,
-        <a href="https://github.com/jcbrand/pluggable.js/blob/master/example/app.js">app.js</a>
-        and <a href="https://github.com/jcbrand/pluggable.js/blob/master/example/plugin.js">plugin.js</a>.
-        Fee free to open them up and see how they look inside. The code has
-        explanatory comments and is also explained in the
-        <a href="https://github.com/jcbrand/pluggable.js">README of pluggable.js</a>.
-    </p>
 
-    <fieldset>
-        <input type="button" id="notify" value="Click me to show a notification"/>
-        <input type="button" id="enable" value="Click me to enable the plugin"/>
-    </fieldset>
+    <header>
+      <div class="container">
+        <h1>pluggable.js/example</h1>
+      </div>
+    </header>
+
+    <div class="container">
+        <p id="notifications"></p>
+        <p>
+            Here's a small example which shows to use pluggable.js to
+            make a private, closured Javascript object pluggable.
+        </p>
+        
+        <p> 
+            There are two Javasript files included in this page,
+            <a href="https://github.com/jcbrand/pluggable.js/blob/master/example/app.js">app.js</a>
+            and <a href="https://github.com/jcbrand/pluggable.js/blob/master/example/plugin.js">plugin.js</a>.
+        </p>
+
+        <p>
+            Feel free to open them up and see how they look inside. The code has
+            explanatory comments and is also explained in the
+            <a href="https://github.com/jcbrand/pluggable.js">README of pluggable.js</a>.
+        </p>
+
+        <fieldset>
+            <input type="button" id="notify" value="Click me to show a notification"/>
+            <input type="button" id="enable" value="Click me to enable the plugin"/>
+        </fieldset>
+    </div>
 </body>
 </html>
