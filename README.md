@@ -15,11 +15,14 @@ a plugin architecture that allows 3rd party developers to extend and override
 private objects and [backbone.js](http://backbonejs.org) classes, but it does not
 require nor depend on either library.
 
-# Dependencies
+# Size and dependencies
 
 Currently pluggable.js depends on [underscore.js](http://underscorejs.org) or
 [lodash.js](http://lodash.com), however if there is enough demand for this
 dependency to be dropped I might do so later on.
+
+Pluggable.js itself (without underscore/lodash) is only 2.5KB when minified
+(without gzip compression).
 
 # Documentation
 
@@ -164,7 +167,8 @@ The way to call the method being overridden, is like this:
 where `methodName` is the name of the method. In our example, this will be
 `showNotification`.
 
-So, with that said, here's what the plugin code will look like:
+So, with that said, here's what the plugin code (which goes into the file `plugin.js`)
+will look like:
 
 ``` Javascript
 (function () {
