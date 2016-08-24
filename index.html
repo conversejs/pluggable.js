@@ -4,14 +4,19 @@
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
 
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <script type="text/javascript" src="pluggable.js"></script>
+    <script type="text/javascript" src="example/app.js"></script>
+    <script type="text/javascript" src="example/plugin.js"></script>
+
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/github-dark.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+    <link rel="stylesheet" type="text/css" href="stylesheets/example.css" media="screen">
 
     <title>pluggable.js by jcbrand</title>
   </head>
 
-  <body>
+    <body onload="myApp.initialize()">
 
     <header>
       <div class="container">
@@ -65,11 +70,20 @@ dependency to be dropped I might do so later on.</p>
 <h2>
 <a id="live-demo-of-the-example-code" class="anchor" href="#live-demo-of-the-example-code" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Live demo of the example code</h2>
 
-<p>You can try out the <a href="https://jcbrand.github.io/pluggable.js/example">live demo</a>
-of the example code given below.</p>
+        <p id="notifications"></p>
+        <p>
+            Here's a small example which shows how pluggable.js can be used to
+            make a private, closured Javascript object pluggable.
+        </p>
+        
+        <p>
+            Further below we'll show the example code and explain how it works.
+        </p>
 
-<p>The files themselves are in the <a href="https://github.com/jcbrand/pluggable.js/tree/master/example">example folder of the
-repo</a>.</p>
+        <fieldset>
+            <input type="button" class="btn btn-example" id="notify" value="Click me to show a notification"/>
+            <input type="button" class="btn btn-example" id="enable" value="Click me to enable the plugin"/>
+        </fieldset>
 
 <h2>
 <a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2>
@@ -286,25 +300,29 @@ otherwise not be available to you.</p>
 <p>So, as you can see, the plugin lets us achieve our three goals stated earlier:</p>
 
 <h3>
-<a id="access-the-closured-scope-of-this-module" class="anchor" href="#access-the-closured-scope-of-this-module" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Access the closured scope of this module.</h3>
+<a id="access-the-closured-scope-of-this-module" class="anchor" href="#access-the-closured-scope-of-this-module" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>1. Access the closured scope of this module.</h3>
 
 <p>We have access to the module and all its properties and methods inside the
 <code>initialize</code> method of our plugin.</p>
 
 <h3>
-<a id="add-new-methods-to-the-module" class="anchor" href="#add-new-methods-to-the-module" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Add new methods to the module.</h3>
+<a id="add-new-methods-to-the-module" class="anchor" href="#add-new-methods-to-the-module" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>2. Add new methods to the module.</h3>
 
 <p>We can add new methods to our module, either inside the <code>initialize</code> method of
 our plugin, or by stating them declaratively in <code>overrides</code> object.</p>
 
 <h3>
-<a id="override-or-extend-existng-methods-private-or-public-on-this-module" class="anchor" href="#override-or-extend-existng-methods-private-or-public-on-this-module" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Override or extend existng methods (private or public) on this module.</h3>
+<a id="override-or-extend-existng-methods-private-or-public-on-this-module" class="anchor" href="#override-or-extend-existng-methods-private-or-public-on-this-module" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>3. Override or extend existng methods (private or public) on this module.</h3>
 
 <p>We can override existing methods and object properties via the <code>overrides</code>
 object.</p>
       </section>
-    </div>
 
+<h2>Contact</h2>
+
+<p>For issues and requests, please use the project's <a href="https://github.com/jcbrand/pluggable.js/issues">issue tracker</a>.</p>
+<p>You can reach me via my website's <a href="http://opkode.com/contact.html">contact form</a> and you can also <a href="https://twitter.com/jcopkode">follow me on twitter</a>.</p>
+</div>
     
   </body>
 </html>

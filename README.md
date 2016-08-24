@@ -265,3 +265,10 @@ our plugin, or by stating them declaratively in `overrides` object.
 
 We can override existing methods and object properties via the `overrides`
 object.
+
+# Contact
+
+For issues and requests, please use the project's [issue tracker](https://github.com/jcbrand/pluggable.js/issues).
+
+You can reach me via my website's [contact form](http://opkode.com/contact.html) and you can also [follow me on twitter](https://twitter.com/jcopkode).
+

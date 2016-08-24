@@ -15,31 +15,8 @@
 
     <link rel="stylesheet" type="text/css" href="../stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="../stylesheets/github-dark.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="../stylesheets/print.css" media="print">
+    <link rel="stylesheet" type="text/css" href="../stylesheets/example.css" media="screen">
 
-    <style type="text/css">
-        input[type="button"] {
-            padding: 10px;
-            margin: 10px;
-        }
-        p {
-            padding: 0.25em;
-        }
-        fieldset {
-            padding: 0.5em;
-            border: none;
-        }
-        .notification {
-            padding: 0.5em;
-            border-radius: 0.5em;
-            border: 1px solid rgb(6,100,255);
-            background-color: rgba(6,100,255,0.1);
-        }
-        .notification.extra {
-            border: 1px solid rgb(500,6,255);
-            background-color: rgba(100,6,255,0.1);
-        }
-    </style>
 </head>
 <body onload="myApp.initialize()">
 
@@ -69,8 +46,8 @@
         </p>
 
         <fieldset>
-            <input type="button" id="notify" value="Click me to show a notification"/>
-            <input type="button" id="enable" value="Click me to enable the plugin"/>
+            <input type="button" class="btn btn-example" id="notify" value="Click me to show a notification"/>
+            <input type="button" class="btn btn-example" id="enable" value="Click me to enable the plugin"/>
         </fieldset>
     </div>
 </body>
