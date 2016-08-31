@@ -31,7 +31,11 @@
     function PluginSocket (plugged, name) {
         this.name = name; 
         this.plugged = plugged;
-        this.plugged.__super__ = {};
+        if (typeof this.plugged.__super__ === 'undefined') {
+            this.plugged.__super__ = {};
+        } else if (typeof this.plugged.__super__ === 'string') {
+            this.plugged.__super__ = { '__string__': this.plugged.__super__ };
+        }
         this.plugins = {};
         this.initialized_plugins = [];
     }
