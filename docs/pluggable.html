@@ -87,7 +87,11 @@ then the name by which the pluggable object may be referenced on the
             <div class="content"><div class='highlight'><pre>    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">PluginSocket</span> (<span class="hljs-params">plugged, name</span>) </span>{
         <span class="hljs-keyword">this</span>.name = name; 
         <span class="hljs-keyword">this</span>.plugged = plugged;
-        <span class="hljs-keyword">this</span>.plugged.__super__ = {};
+        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> <span class="hljs-keyword">this</span>.plugged.__super__ === <span class="hljs-string">'undefined'</span>) {
+            <span class="hljs-keyword">this</span>.plugged.__super__ = {};
+        } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> <span class="hljs-keyword">this</span>.plugged.__super__ === <span class="hljs-string">'string'</span>) {
+            <span class="hljs-keyword">this</span>.plugged.__super__ = { <span class="hljs-string">'__string__'</span>: <span class="hljs-keyword">this</span>.plugged.__super__ };
+        }
         <span class="hljs-keyword">this</span>.plugins = {};
         <span class="hljs-keyword">this</span>.initialized_plugins = [];
     }</pre></div></div>
