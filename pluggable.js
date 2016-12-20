@@ -36,6 +36,7 @@
         } else if (typeof this.plugged.__super__ === 'string') {
             this.plugged.__super__ = { '__string__': this.plugged.__super__ };
         }
+        this.plugged.__super__[name] = this.plugged;
         this.plugins = {};
         this.initialized_plugins = [];
     }
@@ -96,6 +97,7 @@
                 obj.prototype.__super__ = {};
                 obj.prototype.__super__[this.name] = this.plugged;
             }
+            var that = this;
             _.each(attributes, function (value, key) {
                 if (key === 'events') {
                     obj.prototype[key] = _.extend(value, obj.prototype[key]);
@@ -106,13 +108,13 @@
                     // chaining of plugin methods, all the way up to the
                     // original method.
                     var wrapped_function = _.partial(
-                        this.wrappedOverride, key, value, obj.prototype[key]
+                        that.wrappedOverride, key, value, obj.prototype[key]
                     );
                     obj.prototype[key] = wrapped_function;
                 } else {
                     obj.prototype[key] = value;
                 }
-            }.bind(this));
+            });
         },
 
         // Plugins can specify optional dependencies (by means of the
