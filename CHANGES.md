@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.0.3 (Unreleased)
+## 0.0.3 (15 January 2017)
 - Ensure that pluggable obj is reachable in overridden functions [jcbrand]
 
 ## 0.0.2 (24 August 2015)
