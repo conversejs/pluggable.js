@@ -17,12 +17,12 @@ require nor depend on either library.
 
 # Size and dependencies
 
-Currently pluggable.js depends on [underscore.js](http://underscorejs.org) or
-[lodash.js](http://lodash.com), however if there is enough demand for this
-dependency to be dropped I might do so later on.
+Pluggable.js depends on 6 [lodash](https://lodash.com) functions and
+includes a custom build with only these functions in the
+[3rdparty](https://github.com/jcbrand/pluggable.js/tree/master/3rdparty) directory.
 
-Pluggable.js itself (without underscore/lodash) is only 2.5KB when minified
-(without gzip compression).
+Pluggable.js itself is only 2.5KB when minified and the custom lodash build
+is 26KB when minified (both without gzip compression).
 
 # Documentation
 

@@ -13,7 +13,7 @@
 /* Start AMD header */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
-        define("pluggable", ["underscore"], factory);
+        define("pluggable", ["lodash"], factory);
     } else {
         window.pluggable = factory(_);
     }
@@ -62,7 +62,7 @@
                 }
                 this.__super__[key] = super_method.bind(this);
             }
-            return value.apply(this, _.rest(arguments, 3));
+            return value.apply(this, _.drop(arguments, 3));
         },
 
         // `_overrideAttribute` overrides an attribute on the original object
@@ -130,7 +130,7 @@
             _.each(plugin.optional_dependencies, function (name) {
                 var dep = this.plugins[name];
                 if (dep) {
-                    if (_.contains(dep.optional_dependencies, plugin.__name__)) {
+                    if (_.includes(dep.optional_dependencies, plugin.__name__)) {
                         /* FIXME: circular dependency checking is only one level deep. */
                         throw "Found a circular dependency between the plugins \""+
                               plugin.__name__+"\" and \""+name+"\"";
@@ -177,7 +177,7 @@
         // `initializePlugin` applies the overrides (if any) defined on all
         // the registered plugins and then calls the initialize method for each plugin.
         initializePlugin: function (plugin) {
-            if (_.contains(this.initialized_plugins, plugin.__name__)) {
+            if (_.includes(this.initialized_plugins, plugin.__name__)) {
                 /* Don't initialize plugins twice, otherwise we get
                  * infinite recursion in overridden methods.
                  */
