@@ -29,7 +29,7 @@
     // then the name by which the pluggable object may be referenced on the
     // __super__ object (inside overrides).
     function PluginSocket (plugged, name) {
-        this.name = name; 
+        this.name = name;
         this.plugged = plugged;
         if (typeof this.plugged.__super__ === 'undefined') {
             this.plugged.__super__ = {};
@@ -177,6 +177,10 @@
         // `initializePlugin` applies the overrides (if any) defined on all
         // the registered plugins and then calls the initialize method for each plugin.
         initializePlugin: function (plugin) {
+            if (!_.includes(_.keys(this.allowed_plugins), plugin.__name__)) {
+                /* Don't initialize disallowed plugins. */
+                return;
+            }
             if (_.includes(this.initialized_plugins, plugin.__name__)) {
                 /* Don't initialize plugins twice, otherwise we get
                  * infinite recursion in overridden methods.
@@ -206,12 +210,18 @@
         // `initializePlugin` for each.
         // The passed in  properties variable is an object with attributes and methods
         // which will be attached to the plugins.
-        initializePlugins: function (properties) {
+        initializePlugins: function (properties, whitelist, blacklist) {
             if (!_.size(this.plugins)) {
                 return;
             }
             this.properties = properties;
-            _.each(_.values(this.plugins), this.initializePlugin.bind(this));
+            this.allowed_plugins  = _.pickBy(this.plugins,
+                function (plugin, key) {
+                    return (whitelist.length && _.includes(whitelist, key)) &&
+                                !_.includes(blacklist, key);
+                }
+            );
+            _.each(_.values(this.allowed_plugins), this.initializePlugin.bind(this));
         }
     });
     return {
