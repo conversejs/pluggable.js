@@ -39,8 +39,7 @@ repo](https://github.com/jcbrand/pluggable.js/tree/master/example).
 
 ## Usage
 
-*Please note: The code in pluggable.js and all the examples to follow use the
-ES5 version of Javascript.*
+*Please note: The examples to follow use the ES5 version of Javascript.*
 
 Suppose you have a module with a private scope and two private methods,
 `_showNotification` and `_fadeOut`. Let's just assume for the sake of

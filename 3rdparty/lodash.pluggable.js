@@ -1,7 +1,7 @@
 /**
  * @license
  * Lodash (Custom Build) <https://lodash.com/>
- * Build: `lodash -o ./3rdparty/lodash.pluggable.js include="drop,each,extend,includes,partial,size"`
+ * Build: `lodash -o ./3rdparty/lodash.pluggable.js include="drop,each,extend,includes,partial,size,pickBy"`
  * Copyright JS Foundation and other contributors <https://js.foundation/>
  * Released under MIT license <https://lodash.com/license>
  * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
@@ -2068,6 +2068,31 @@
   }
 
   /**
+   * The base implementation of  `_.pickBy` without support for iteratee shorthands.
+   *
+   * @private
+   * @param {Object} object The source object.
+   * @param {string[]} paths The property paths to pick.
+   * @param {Function} predicate The function invoked per property.
+   * @returns {Object} Returns the new object.
+   */
+  function basePickBy(object, paths, predicate) {
+    var index = -1,
+        length = paths.length,
+        result = {};
+
+    while (++index < length) {
+      var path = paths[index],
+          value = baseGet(object, path);
+
+      if (predicate(value, path)) {
+        baseSet(result, castPath(path, object), value);
+      }
+    }
+    return result;
+  }
+
+  /**
    * A specialized version of `baseProperty` which supports deep paths.
    *
    * @private
@@ -2090,6 +2115,46 @@
    */
   function baseRest(func, start) {
     return setToString(overRest(func, start, identity), func + '');
+  }
+
+  /**
+   * The base implementation of `_.set`.
+   *
+   * @private
+   * @param {Object} object The object to modify.
+   * @param {Array|string} path The path of the property to set.
+   * @param {*} value The value to set.
+   * @param {Function} [customizer] The function to customize path creation.
+   * @returns {Object} Returns `object`.
+   */
+  function baseSet(object, path, value, customizer) {
+    if (!isObject(object)) {
+      return object;
+    }
+    path = castPath(path, object);
+
+    var index = -1,
+        length = path.length,
+        lastIndex = length - 1,
+        nested = object;
+
+    while (nested != null && ++index < length) {
+      var key = toKey(path[index]),
+          newValue = value;
+
+      if (index != lastIndex) {
+        var objValue = nested[key];
+        newValue = customizer ? customizer(objValue, key, nested) : undefined;
+        if (newValue === undefined) {
+          newValue = isObject(objValue)
+            ? objValue
+            : (isIndex(path[index + 1]) ? [] : {});
+        }
+      }
+      assignValue(nested, key, newValue);
+      nested = nested[key];
+    }
+    return object;
   }
 
   /**
@@ -4792,6 +4857,37 @@
   }
 
   /**
+   * Creates an object composed of the `object` properties `predicate` returns
+   * truthy for. The predicate is invoked with two arguments: (value, key).
+   *
+   * @static
+   * @memberOf _
+   * @since 4.0.0
+   * @category Object
+   * @param {Object} object The source object.
+   * @param {Function} [predicate=_.identity] The function invoked per property.
+   * @returns {Object} Returns the new object.
+   * @example
+   *
+   * var object = { 'a': 1, 'b': '2', 'c': 3 };
+   *
+   * _.pickBy(object, _.isNumber);
+   * // => { 'a': 1, 'c': 3 }
+   */
+  function pickBy(object, predicate) {
+    if (object == null) {
+      return {};
+    }
+    var props = arrayMap(getAllKeysIn(object), function(prop) {
+      return [prop];
+    });
+    predicate = getIteratee(predicate);
+    return basePickBy(object, props, function(value, path) {
+      return predicate(value, path[0]);
+    });
+  }
+
+  /**
    * Creates an array of the own enumerable string keyed property values of `object`.
    *
    * **Note:** Non-object values are coerced to objects.
@@ -5006,6 +5102,7 @@
   lodash.keysIn = keysIn;
   lodash.memoize = memoize;
   lodash.partial = partial;
+  lodash.pickBy = pickBy;
   lodash.property = property;
   lodash.values = values;
 
