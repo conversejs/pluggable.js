@@ -26,7 +26,7 @@ clean:
 
 .PHONY: docs
 docs:
-	$(DOCCO) --css=stylesheets/docco.css pluggable.js
+	$(DOCCO) --css=stylesheets/docco.css src/pluggable.js
 
 .PHONY: lodash
 lodash: 3rdparty/lodash.pluggable.js
@@ -36,8 +36,8 @@ lodash: 3rdparty/lodash.pluggable.js
 
 .PHONY: watchjs
 watchjs: stamp-npm
-	$(BABEL) --source-maps --watch=pluggable.js --out-dir=./dist
+	$(BABEL) --source-maps --out-file=./dist/pluggable.js --watch=src/pluggable.js
 
 .PHONY: dist
-dist: stamp-npm FORCE
-	$(BABEL) --source-maps --out-dir=./dist pluggable.js
+dist: lodash
+	$(BABEL) --source-maps --out-file=./dist/pluggable.js src/pluggable.js
