@@ -5,6 +5,8 @@
     /_/   /_/\__,_/\__, /\__, /\__/_/_.___/_/\___(_)_/ /____/
                   /____//____/                    /___/ 
 
+[![Travis](https://api.travis-ci.org/jcbrand/pluggable.js.png?branch=master)](https://travis-ci.org/jcbrand/pluggable.js)
+
 # Introduction
 
 pluggable.js lets you make your JS project extendable via plugins, while still
@@ -13,11 +15,11 @@ keeping sensitive objects and data private through closures.
 It was originally written for [converse.js](https://conversejs.org), to provide
 a plugin architecture that allows 3rd party developers to extend and override
 private objects and [backbone.js](http://backbonejs.org) classes, but it does not
-require nor depend on either library.
+require or depend on either library.
 
 # Size and dependencies
 
-Pluggable.js depends on 6 [lodash](https://lodash.com) functions and
+Pluggable.js depends on 8 [lodash](https://lodash.com) functions and
 includes a custom build with only these functions in the
 [3rdparty](https://github.com/jcbrand/pluggable.js/tree/master/3rdparty) directory.
 
@@ -39,7 +41,8 @@ repo](https://github.com/jcbrand/pluggable.js/tree/master/example).
 
 ## Usage
 
-*Please note: The examples to follow use the ES5 version of Javascript.*
+*Please note: The examples to follow use the ES5 version of Javascript.
+ Pluggable.js however also works with ES2015 modules.*
 
 Suppose you have a module with a private scope and two private methods,
 `_showNotification` and `_fadeOut`. Let's just assume for the sake of
@@ -48,7 +51,7 @@ illustration that there's a good reason why these methods are private.
 What we want to do, is to make this module pluggable. In other words, we want
 people to be able to write plugins for this module, in which they can:
 
-- Access the closured scope of this module.
+- Access the private or closured scope of this module.
 - Add new methods to the module.
 - Override or extend existng methods (private or public) on this module.
 
