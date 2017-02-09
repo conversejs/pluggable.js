@@ -162,9 +162,9 @@ previous’ <strong>super</strong> attribute.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>    _overrideAttribute: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">key, plugin</span>) </span>{
-        <span class="hljs-keyword">var</span> value = plugin.overrides[key];
+        <span class="hljs-keyword">let</span> value = plugin.overrides[key];
         <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> value === <span class="hljs-string">"function"</span>) {
-            <span class="hljs-keyword">var</span> wrapped_function = _.partial(
+            <span class="hljs-keyword">let</span> wrapped_function = _.partial(
                 <span class="hljs-keyword">this</span>.wrappedOverride, key, value, <span class="hljs-keyword">this</span>.plugged[key]
             );
             <span class="hljs-keyword">this</span>.plugged[key] = wrapped_function;
@@ -178,7 +178,7 @@ previous’ <strong>super</strong> attribute.</p>
             obj.prototype.__super__ = {};
             obj.prototype.__super__[<span class="hljs-keyword">this</span>.name] = <span class="hljs-keyword">this</span>.plugged;
         }
-        <span class="hljs-keyword">var</span> that = <span class="hljs-keyword">this</span>;
+        <span class="hljs-keyword">let</span> that = <span class="hljs-keyword">this</span>;
         _.each(attributes, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value, key</span>) </span>{
             <span class="hljs-keyword">if</span> (key === <span class="hljs-string">'events'</span>) {
                 obj.prototype[key] = _.extend(value, obj.prototype[key]);
@@ -201,7 +201,7 @@ original method.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>                <span class="hljs-keyword">var</span> wrapped_function = _.partial(
+            <div class="content"><div class='highlight'><pre>                <span class="hljs-keyword">let</span> wrapped_function = _.partial(
                     that.wrappedOverride, key, value, obj.prototype[key]
                 );
                 obj.prototype[key] = wrapped_function;
@@ -233,8 +233,8 @@ on the object being made pluggable (i.e. the object passed to
             </div>
             
             <div class="content"><div class='highlight'><pre>    loadOptionalDependencies: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">plugin</span>) </span>{
-        _.each(plugin.optional_dependencies, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">name</span>) </span>{
-            <span class="hljs-keyword">var</span> dep = <span class="hljs-keyword">this</span>.plugins[name];
+        _.each(plugin.optional_dependencies, (name) =&gt; {
+            <span class="hljs-keyword">let</span> dep = <span class="hljs-keyword">this</span>.plugins[name];
             <span class="hljs-keyword">if</span> (dep) {
                 <span class="hljs-keyword">if</span> (_.includes(dep.optional_dependencies, plugin.__name__)) {
                     <span class="hljs-comment">/* <span class="hljs-doctag">FIXME:</span> circular dependency checking is only one level deep. */</span>
@@ -248,7 +248,7 @@ on the object being made pluggable (i.e. the object passed to
                     <span class="hljs-string">"for the plugin \""</span>+plugin.__name__+<span class="hljs-string">"\". "</span>+
                     <span class="hljs-string">"If it's needed, make sure it's loaded by require.js"</span>);
             }
-        }.bind(<span class="hljs-keyword">this</span>));
+        });
     },
 
     <span class="hljs-attr">throwUndefinedDependencyError</span>: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">msg</span>) </span>{
@@ -276,8 +276,8 @@ are defined on any of the plugins.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>    applyOverrides: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">plugin</span>) </span>{
-        _.each(<span class="hljs-built_in">Object</span>.keys(plugin.overrides || {}), <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">key</span>) </span>{
-            <span class="hljs-keyword">var</span> override = plugin.overrides[key];
+        _.each(<span class="hljs-built_in">Object</span>.keys(plugin.overrides || {}), (key) =&gt; {
+            <span class="hljs-keyword">let</span> override = plugin.overrides[key];
             <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> override === <span class="hljs-string">"object"</span>) {
                 <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> <span class="hljs-keyword">this</span>.plugged[key] === <span class="hljs-string">'undefined'</span>) {
                     <span class="hljs-keyword">this</span>.throwUndefinedDependencyError(
@@ -289,7 +289,7 @@ are defined on any of the plugins.</p>
             } <span class="hljs-keyword">else</span> {
                 <span class="hljs-keyword">this</span>._overrideAttribute(key, plugin);
             }
-        }.bind(<span class="hljs-keyword">this</span>));
+        });
     },</pre></div></div>
             
         </li>
@@ -343,6 +343,9 @@ by adding it to the <code>plugins</code> map on the PluginSocket instance.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>    registerPlugin: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">name, plugin</span>) </span>{
+        <span class="hljs-keyword">if</span> (name <span class="hljs-keyword">in</span> <span class="hljs-keyword">this</span>.plugins) {
+            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">'Error: Plugin name '</span>+name+<span class="hljs-string">' is already taken'</span>);
+        }
         plugin.__name__ = name;
         <span class="hljs-keyword">this</span>.plugins[name] = plugin;
     },</pre></div></div>
@@ -364,7 +367,7 @@ which will be attached to the plugins.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    initializePlugins: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">properties, whitelist=[], blacklist=[]</span>) </span>{
+            <div class="content"><div class='highlight'><pre>    initializePlugins: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">properties={}, whitelist=[], blacklist=[]</span>) </span>{
         <span class="hljs-keyword">if</span> (!_.size(<span class="hljs-keyword">this</span>.plugins)) {
             <span class="hljs-keyword">return</span>;
         }
@@ -410,12 +413,12 @@ which will be attached to the plugins.</p>
     <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> name === <span class="hljs-string">'undefined'</span>) {
         name = <span class="hljs-string">'plugged'</span>;
     }
-    <span class="hljs-keyword">var</span> ref = {};
+    <span class="hljs-keyword">let</span> ref = {};
     ref[attrname] = <span class="hljs-keyword">new</span> PluginSocket(object, name);
     <span class="hljs-keyword">return</span> _.extend(object, ref);
 }
 
-<span class="hljs-keyword">export</span> {
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> {
     enable
 };</pre></div></div>
             

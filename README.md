@@ -39,6 +39,10 @@ of the example code given below.
 The files themselves are in the [example folder of the
 repo](https://github.com/jcbrand/pluggable.js/tree/master/example).
 
+## Running the tests
+
+Simply run `make check`
+
 ## Usage
 
 *Please note: The examples to follow use the ES5 version of Javascript.
