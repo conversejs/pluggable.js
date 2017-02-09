@@ -145,18 +145,20 @@
         // on the object being made pluggable (i.e. the object passed to
         // `pluggable.enable`).
         loadOptionalDependencies: function loadOptionalDependencies(plugin) {
+            var _this = this;
+
             _.each(plugin.optional_dependencies, function (name) {
-                var dep = this.plugins[name];
+                var dep = _this.plugins[name];
                 if (dep) {
                     if (_.includes(dep.optional_dependencies, plugin.__name__)) {
                         /* FIXME: circular dependency checking is only one level deep. */
                         throw "Found a circular dependency between the plugins \"" + plugin.__name__ + "\" and \"" + name + "\"";
                     }
-                    this.initializePlugin(dep);
+                    _this.initializePlugin(dep);
                 } else {
-                    this.throwUndefinedDependencyError("Could not find optional dependency \"" + name + "\" " + "for the plugin \"" + plugin.__name__ + "\". " + "If it's needed, make sure it's loaded by require.js");
+                    _this.throwUndefinedDependencyError("Could not find optional dependency \"" + name + "\" " + "for the plugin \"" + plugin.__name__ + "\". " + "If it's needed, make sure it's loaded by require.js");
                 }
-            }.bind(this));
+            });
         },
 
         throwUndefinedDependencyError: function throwUndefinedDependencyError(msg) {
@@ -172,18 +174,20 @@
         // and all overrides of methods or Backbone views and models that
         // are defined on any of the plugins.
         applyOverrides: function applyOverrides(plugin) {
+            var _this2 = this;
+
             _.each(Object.keys(plugin.overrides || {}), function (key) {
                 var override = plugin.overrides[key];
                 if ((typeof override === 'undefined' ? 'undefined' : _typeof(override)) === "object") {
-                    if (typeof this.plugged[key] === 'undefined') {
-                        this.throwUndefinedDependencyError("Error: Plugin \"" + plugin.__name__ + "\" tried to override " + key + " but it's not found.");
+                    if (typeof _this2.plugged[key] === 'undefined') {
+                        _this2.throwUndefinedDependencyError("Error: Plugin \"" + plugin.__name__ + "\" tried to override " + key + " but it's not found.");
                     } else {
-                        this._extendObject(this.plugged[key], override);
+                        _this2._extendObject(_this2.plugged[key], override);
                     }
                 } else {
-                    this._overrideAttribute(key, plugin);
+                    _this2._overrideAttribute(key, plugin);
                 }
-            }.bind(this));
+            });
         },
 
         // `initializePlugin` applies the overrides (if any) defined on all

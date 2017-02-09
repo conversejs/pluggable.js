@@ -74,9 +74,9 @@ _.extend(PluginSocket.prototype, {
     //
     // `plugin2.MyFunc.__super__.myFunc => plugin1.MyFunc.__super__.myFunc => original.myFunc`
     _overrideAttribute: function (key, plugin) {
-        var value = plugin.overrides[key];
+        let value = plugin.overrides[key];
         if (typeof value === "function") {
-            var wrapped_function = _.partial(
+            let wrapped_function = _.partial(
                 this.wrappedOverride, key, value, this.plugged[key]
             );
             this.plugged[key] = wrapped_function;
@@ -90,7 +90,7 @@ _.extend(PluginSocket.prototype, {
             obj.prototype.__super__ = {};
             obj.prototype.__super__[this.name] = this.plugged;
         }
-        var that = this;
+        let that = this;
         _.each(attributes, function (value, key) {
             if (key === 'events') {
                 obj.prototype[key] = _.extend(value, obj.prototype[key]);
@@ -100,7 +100,7 @@ _.extend(PluginSocket.prototype, {
                 // overriding method is called. This is done to enable
                 // chaining of plugin methods, all the way up to the
                 // original method.
-                var wrapped_function = _.partial(
+                let wrapped_function = _.partial(
                     that.wrappedOverride, key, value, obj.prototype[key]
                 );
                 obj.prototype[key] = wrapped_function;
@@ -120,8 +120,8 @@ _.extend(PluginSocket.prototype, {
     // on the object being made pluggable (i.e. the object passed to
     // `pluggable.enable`).
     loadOptionalDependencies: function (plugin) {
-        _.each(plugin.optional_dependencies, function (name) {
-            var dep = this.plugins[name];
+        _.each(plugin.optional_dependencies, (name) => {
+            let dep = this.plugins[name];
             if (dep) {
                 if (_.includes(dep.optional_dependencies, plugin.__name__)) {
                     /* FIXME: circular dependency checking is only one level deep. */
@@ -135,7 +135,7 @@ _.extend(PluginSocket.prototype, {
                     "for the plugin \""+plugin.__name__+"\". "+
                     "If it's needed, make sure it's loaded by require.js");
             }
-        }.bind(this));
+        });
     },
 
     throwUndefinedDependencyError: function (msg) {
@@ -151,8 +151,8 @@ _.extend(PluginSocket.prototype, {
     // and all overrides of methods or Backbone views and models that
     // are defined on any of the plugins.
     applyOverrides: function (plugin) {
-        _.each(Object.keys(plugin.overrides || {}), function (key) {
-            var override = plugin.overrides[key];
+        _.each(Object.keys(plugin.overrides || {}), (key) => {
+            let override = plugin.overrides[key];
             if (typeof override === "object") {
                 if (typeof this.plugged[key] === 'undefined') {
                     this.throwUndefinedDependencyError(
@@ -164,7 +164,7 @@ _.extend(PluginSocket.prototype, {
             } else {
                 this._overrideAttribute(key, plugin);
             }
-        }.bind(this));
+        });
     },
 
     // `initializePlugin` applies the overrides (if any) defined on all
@@ -235,7 +235,7 @@ function enable (object, name, attrname) {
     if (typeof name === 'undefined') {
         name = 'plugged';
     }
-    var ref = {};
+    let ref = {};
     ref[attrname] = new PluginSocket(object, name);
     return _.extend(object, ref);
 }
