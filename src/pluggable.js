@@ -194,6 +194,9 @@ _.extend(PluginSocket.prototype, {
     // `registerPlugin` registers (or inserts, if you'd like) a plugin,
     // by adding it to the `plugins` map on the PluginSocket instance.
     registerPlugin: function (name, plugin) {
+        if (name in this.plugins) {
+            throw new Error('Error: Plugin name '+name+' is already taken');
+        }
         plugin.__name__ = name;
         this.plugins[name] = plugin;
     },
@@ -203,7 +206,7 @@ _.extend(PluginSocket.prototype, {
     // `initializePlugin` for each.
     // The passed in  properties variable is an object with attributes and methods
     // which will be attached to the plugins.
-    initializePlugins: function (properties, whitelist=[], blacklist=[]) {
+    initializePlugins: function (properties={}, whitelist=[], blacklist=[]) {
         if (!_.size(this.plugins)) {
             return;
         }
@@ -240,6 +243,6 @@ function enable (object, name, attrname) {
     return _.extend(object, ref);
 }
 
-export {
+export default {
     enable
 };

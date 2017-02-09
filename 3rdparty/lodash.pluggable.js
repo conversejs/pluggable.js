@@ -1,7 +1,7 @@
 /**
  * @license
  * Lodash (Custom Build) <https://lodash.com/>
- * Build: `lodash -o ./3rdparty/lodash.pluggable.js include="drop,each,extend,includes,partial,size,pickBy"`
+ * Build: `lodash -o ./3rdparty/lodash.pluggable.js include="drop,each,extend,includes,partial,size,pickBy,has"`
  * Copyright JS Foundation and other contributors <https://js.foundation/>
  * Released under MIT license <https://lodash.com/license>
  * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
@@ -1774,6 +1774,18 @@
     return (symToStringTag && symToStringTag in Object(value))
       ? getRawTag(value)
       : objectToString(value);
+  }
+
+  /**
+   * The base implementation of `_.has` without support for deep paths.
+   *
+   * @private
+   * @param {Object} [object] The object to query.
+   * @param {Array|string} key The key to check.
+   * @returns {boolean} Returns `true` if `key` exists, else `false`.
+   */
+  function baseHas(object, key) {
+    return object != null && hasOwnProperty.call(object, key);
   }
 
   /**
@@ -4768,6 +4780,37 @@
   }
 
   /**
+   * Checks if `path` is a direct property of `object`.
+   *
+   * @static
+   * @since 0.1.0
+   * @memberOf _
+   * @category Object
+   * @param {Object} object The object to query.
+   * @param {Array|string} path The path to check.
+   * @returns {boolean} Returns `true` if `path` exists, else `false`.
+   * @example
+   *
+   * var object = { 'a': { 'b': 2 } };
+   * var other = _.create({ 'a': _.create({ 'b': 2 }) });
+   *
+   * _.has(object, 'a');
+   * // => true
+   *
+   * _.has(object, 'a.b');
+   * // => true
+   *
+   * _.has(object, ['a', 'b']);
+   * // => true
+   *
+   * _.has(other, 'a');
+   * // => false
+   */
+  function has(object, path) {
+    return object != null && hasPath(object, path, baseHas);
+  }
+
+  /**
    * Checks if `path` is a direct or inherited property of `object`.
    *
    * @static
@@ -5115,6 +5158,7 @@
   lodash.eq = eq;
   lodash.forEach = forEach;
   lodash.get = get;
+  lodash.has = has;
   lodash.hasIn = hasIn;
   lodash.identity = identity;
   lodash.includes = includes;
