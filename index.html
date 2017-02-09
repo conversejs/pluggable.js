@@ -40,12 +40,13 @@
 /_/   /_/\__,_/\__, /\__, /\__/_/_.___/_/\___(_)_/ /____/
               /____//____/                    /___/ 
 </code></pre>
-
+<p><a href="https://travis-ci.org/jcbrand/pluggable.js"><img src="https://api.travis-ci.org/jcbrand/pluggable.js.png?branch=master" alt="Travis" /></a></p>
 <h1>
 <a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Introduction</h1>
 
 <p>pluggable.js lets you make your JS project extendable via plugins, while still
-keeping sensitive objects and data private through closures.</p>
+keeping sensitive objects and data private within es2015 modules or through closures.
+</p>
 
 <p>It was originally written for <a href="https://conversejs.org">converse.js</a>, to provide
 a plugin architecture that allows 3rd party developers to extend and override
@@ -55,12 +56,13 @@ require nor depend on either library.</p>
 <h1>
 <a id="size-and-dependencies" class="anchor" href="#size-and-dependencies" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Size and dependencies</h1>
 
-<p>Currently pluggable.js depends on <a href="http://underscorejs.org">underscore.js</a> or
-<a href="http://lodash.com">lodash.js</a>, however if there is enough demand for this
-dependency to be dropped I might do so later on.</p>
+<p>Pluggable.js depends on 8 <a href="http://lodash.com">lodash</a> functions and provides
+a custom lodash build with only these functions in the 
+<a href="https://github.com/jcbrand/pluggable.js/tree/master/3rdparty">3rdparty/</a> directory.
+</p>
 
-<p>Pluggable.js itself (without underscore/lodash) is only 2.5KB when minified
-(without gzip compression).</p>
+<p>Pluggable.js itself is only 2.5KB when minified and the custom lodash build is
+26KB when minified (both without gzip compression).</p>
 
 <h1>
 <a id="documentation" class="anchor" href="#documentation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Documentation</h1>
@@ -88,8 +90,10 @@ dependency to be dropped I might do so later on.</p>
 <h2>
 <a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2>
 
-<p><em>Please note: The code in pluggable.js and all the examples to follow use the
-ES5 version of Javascript.</em></p>
+<p><em>
+Please note: The examples to follow use the ES5 version of Javascript.
+ Pluggable.js however also works with ES2015 modules.
+</em></p>
 
 <p>Suppose you have a module with a private scope and two private methods,
 <code>_showNotification</code> and <code>_fadeOut</code>. Let's just assume for the sake of

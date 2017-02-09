@@ -15,12 +15,12 @@ keeping sensitive objects and data private through closures.
 It was originally written for [converse.js](https://conversejs.org), to provide
 a plugin architecture that allows 3rd party developers to extend and override
 private objects and [backbone.js](http://backbonejs.org) classes, but it does not
-require or depend on either library.
+require nor depend on either library.
 
 # Size and dependencies
 
 Pluggable.js depends on 8 [lodash](https://lodash.com) functions and
-includes a custom build with only these functions in the
+provides a custom lodash build with only these functions in the
 [3rdparty](https://github.com/jcbrand/pluggable.js/tree/master/3rdparty) directory.
 
 Pluggable.js itself is only 2.5KB when minified and the custom lodash build

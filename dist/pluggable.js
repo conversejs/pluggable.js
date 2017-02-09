@@ -16,7 +16,6 @@
     Object.defineProperty(exports, "__esModule", {
         value: true
     });
-    exports.enable = undefined;
 
     var _ = _interopRequireWildcard(_lodash);
 
@@ -217,6 +216,9 @@
         // `registerPlugin` registers (or inserts, if you'd like) a plugin,
         // by adding it to the `plugins` map on the PluginSocket instance.
         registerPlugin: function registerPlugin(name, plugin) {
+            if (name in this.plugins) {
+                throw new Error('Error: Plugin name ' + name + ' is already taken');
+            }
             plugin.__name__ = name;
             this.plugins[name] = plugin;
         },
@@ -226,7 +228,8 @@
         // `initializePlugin` for each.
         // The passed in  properties variable is an object with attributes and methods
         // which will be attached to the plugins.
-        initializePlugins: function initializePlugins(properties) {
+        initializePlugins: function initializePlugins() {
+            var properties = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
             var whitelist = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
             var blacklist = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
 
@@ -263,7 +266,9 @@
         return _.extend(object, ref);
     }
 
-    exports.enable = enable;
+    exports.default = {
+        enable: enable
+    };
 });
 
 //# sourceMappingURL=pluggable.js.map

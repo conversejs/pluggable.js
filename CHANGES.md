@@ -2,17 +2,19 @@
 
 ## 1.0.0 (Unreleased)
 
-- Use lodash instead of underscore. [jcbrand]
+- Use lodash instead of underscore.
+- Update pluggable.js to ES2015 syntax.
+- Add unit tests and integrate into TravisCI.
+- Throw an error when reusing an already taken plugin name.
 
 ## 0.0.3 (15 January 2017)
-- Ensure that pluggable obj is reachable in overridden functions [jcbrand]
+- Ensure that pluggable obj is reachable in overridden functions
 
 ## 0.0.2 (24 August 2016)
-- Rename `_super` attribute to `__super__`. [jcbrand]
-- Renamed `Pluggable` class to `PluginSocket`. [jcbrand]
+- Rename `_super` attribute to `__super__`.
+- Renamed `Pluggable` class to `PluginSocket`.
 - Allow the attribute name referring to the `PluginSocket` instance to be
-  specified when calling `pluggable.enable`. [jcbrand]
+  specified when calling `pluggable.enable`.
 
 ## 0.0.1
 - Initial release
-
