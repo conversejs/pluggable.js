@@ -16,6 +16,7 @@
     Object.defineProperty(exports, "__esModule", {
         value: true
     });
+    exports.enable = undefined;
 
     var _ = _interopRequireWildcard(_lodash);
 
@@ -266,6 +267,7 @@
         return _.extend(object, ref);
     }
 
+    exports.enable = enable;
     exports.default = {
         enable: enable
     };

@@ -243,6 +243,9 @@ function enable (object, name, attrname) {
     return _.extend(object, ref);
 }
 
+export {
+    enable
+};
 export default {
     enable
 };
