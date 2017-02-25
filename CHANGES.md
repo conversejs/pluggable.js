@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.0 (Unreleased)
+## 1.0.0 (2017-02-25)
 
 - Use lodash instead of underscore.
 - Update pluggable.js to ES2015 syntax.

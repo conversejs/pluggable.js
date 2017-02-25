@@ -48,3 +48,10 @@ watchjs: stamp-npm
 .PHONY: dist
 dist: lodash
 	$(BABEL) --source-maps --out-file=./dist/pluggable.js src/pluggable.js
+
+.PHONY: release
+release:
+	sed -i s/\"version\":\ \"[0-9]\.[0-9]\.[0-9]\"/\"version\":\ \"$(VERSION)\"/ package.json
+	sed -i "s/(Unreleased)/(`date +%Y-%m-%d`)/" CHANGES.md
+	make docs
+	make dist

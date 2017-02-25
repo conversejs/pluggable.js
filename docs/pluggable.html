@@ -173,7 +173,7 @@ previous’ <strong>super</strong> attribute.</p>
         }
     },
 
-    <span class="hljs-attr">_extendObject</span>: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">obj, attributes</span>) </span>{
+    _extendObject: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">obj, attributes</span>) </span>{
         <span class="hljs-keyword">if</span> (!obj.prototype.__super__) {
             obj.prototype.__super__ = {};
             obj.prototype.__super__[<span class="hljs-keyword">this</span>.name] = <span class="hljs-keyword">this</span>.plugged;
@@ -251,7 +251,7 @@ on the object being made pluggable (i.e. the object passed to
         });
     },
 
-    <span class="hljs-attr">throwUndefinedDependencyError</span>: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">msg</span>) </span>{
+    throwUndefinedDependencyError: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">msg</span>) </span>{
         <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.plugged.strict_plugin_dependencies) {
             <span class="hljs-keyword">throw</span> msg;
         } <span class="hljs-keyword">else</span> {
@@ -418,6 +418,9 @@ which will be attached to the plugins.</p>
     <span class="hljs-keyword">return</span> _.extend(object, ref);
 }
 
+<span class="hljs-keyword">export</span> {
+    enable
+};
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> {
     enable
 };</pre></div></div>
