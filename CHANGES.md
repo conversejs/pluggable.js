@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.1 (Unreleased)
+
+- Ensure that `plugged` obj is also available in overriden constructors
+
 ## 1.0.0 (2017-02-25)
 
 - Use lodash instead of underscore.
