@@ -198,7 +198,7 @@
         },
 
         // `initializePlugin` applies the overrides (if any) defined on all
-        // the registered plugins and then calls the initialize method for each plugin.
+        // the registered plugins and then calls the initialize method of the plugin
         initializePlugin: function initializePlugin(plugin) {
             if (!_.includes(_.keys(this.allowed_plugins), plugin.__name__)) {
                 /* Don't initialize disallowed plugins. */
@@ -210,15 +210,18 @@
                 */
                 return;
             }
-            _.extend(plugin, this.properties);
-            if (plugin.optional_dependencies) {
-                this.loadOptionalDependencies(plugin);
+            if (_.isBoolean(plugin.enabled) && plugin.enabled || _.isFunction(plugin.enabled) && plugin.enabled(this.plugged) || _.isNil(plugin.enabled)) {
+
+                _.extend(plugin, this.properties);
+                if (plugin.optional_dependencies) {
+                    this.loadOptionalDependencies(plugin);
+                }
+                this.applyOverrides(plugin);
+                if (typeof plugin.initialize === "function") {
+                    plugin.initialize.bind(plugin)(this);
+                }
+                this.initialized_plugins.push(plugin.__name__);
             }
-            this.applyOverrides(plugin);
-            if (typeof plugin.initialize === "function") {
-                plugin.initialize.bind(plugin)(this);
-            }
-            this.initialized_plugins.push(plugin.__name__);
         },
 
         // `registerPlugin` registers (or inserts, if you'd like) a plugin,

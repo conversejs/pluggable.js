@@ -16,6 +16,12 @@ function getPluginSocket () {
     return app.pluginSocket;
 }
 
+function getClosuredApp () {
+    // Normally this wouldn't be exposed, but we do so here for testing
+    // purposes.
+    return app;
+}
+
 // Calling `pluggable.enable` on the private `app` object, will make it
 // pluggable. Additionally, it will get the `pluginSocket` attribute, which
 // refers to the object that the plugins get plugged into.
@@ -26,6 +32,7 @@ function makePluggable () {
 export {
     initialize,
     registerPlugin,
+    getClosuredApp,
     getPluginSocket,
     makePluggable
 };

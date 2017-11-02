@@ -3,6 +3,8 @@
 ## 1.0.1 (Unreleased)
 
 - Ensure that `plugged` obj is also available in overriden constructors
+- Plugins now can have an `enabled` attribute (either a method or a property)
+  which determines whether the plugin should be initialized or not.
 
 ## 1.0.0 (2017-02-25)
 
