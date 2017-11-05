@@ -5,6 +5,7 @@ BABEL-NODE		?= ./node_modules/.bin/babel-node
 FAUCET			?= ./node_modules/.bin/faucet
 BROWSER-RUN		?= ./node_modules/.bin/browser-run
 BROWSERIFY		?= ./node_modules/.bin/browserify
+SED				?= sed
 
 all: stamp-npm
 
@@ -51,7 +52,7 @@ dist: lodash
 
 .PHONY: release
 release:
-	sed -i s/\"version\":\ \"[0-9]\.[0-9]\.[0-9]\"/\"version\":\ \"$(VERSION)\"/ package.json
-	sed -i "s/(Unreleased)/(`date +%Y-%m-%d`)/" CHANGES.md
+	$(SED) -ri s/\"version\":\ \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/\"version\":\ \"$(VERSION)\"/ package.json
+	$(SED) -i "s/(Unreleased)/(`date +%Y-%m-%d`)/" CHANGES.md
 	make docs
 	make dist

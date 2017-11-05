@@ -123,19 +123,20 @@ original method.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    wrappedOverride: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">key, value, super_method</span>) </span>{
+            <div class="content"><div class='highlight'><pre>    wrappedOverride: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">key, value, super_method, default_super</span>) </span>{
         <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> super_method === <span class="hljs-string">"function"</span>) {
             <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> <span class="hljs-keyword">this</span>.__super__ === <span class="hljs-string">"undefined"</span>) {
                 <span class="hljs-comment">/* We're not on the context of the plugged object.
-                * This can happen when the overridden method is called via
-                * an event handler. In this case, we simply tack on the
-                * __super__ obj.
-                */</span>
-                <span class="hljs-keyword">this</span>.__super__ = {};
+                 * This can happen when the overridden method is called via
+                 * an event handler or when it's a constructor.
+                 *
+                 * In this case, we simply tack on the  __super__ obj.
+                 */</span>
+                <span class="hljs-keyword">this</span>.__super__ = default_super;
             }
             <span class="hljs-keyword">this</span>.__super__[key] = super_method.bind(<span class="hljs-keyword">this</span>);
         }
-        <span class="hljs-keyword">return</span> value.apply(<span class="hljs-keyword">this</span>, _.drop(<span class="hljs-built_in">arguments</span>, <span class="hljs-number">3</span>));
+        <span class="hljs-keyword">return</span> value.apply(<span class="hljs-keyword">this</span>, _.drop(<span class="hljs-built_in">arguments</span>, <span class="hljs-number">4</span>));
     },</pre></div></div>
             
         </li>
@@ -164,8 +165,11 @@ previous’ <strong>super</strong> attribute.</p>
             <div class="content"><div class='highlight'><pre>    _overrideAttribute: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">key, plugin</span>) </span>{
         <span class="hljs-keyword">let</span> value = plugin.overrides[key];
         <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> value === <span class="hljs-string">"function"</span>) {
+            <span class="hljs-keyword">let</span> default_super = {};
+            default_super[<span class="hljs-keyword">this</span>.name] = <span class="hljs-keyword">this</span>.plugged;
+
             <span class="hljs-keyword">let</span> wrapped_function = _.partial(
-                <span class="hljs-keyword">this</span>.wrappedOverride, key, value, <span class="hljs-keyword">this</span>.plugged[key]
+                <span class="hljs-keyword">this</span>.wrappedOverride, key, value, <span class="hljs-keyword">this</span>.plugged[key],  default_super
             );
             <span class="hljs-keyword">this</span>.plugged[key] = wrapped_function;
         } <span class="hljs-keyword">else</span> {
@@ -173,7 +177,7 @@ previous’ <strong>super</strong> attribute.</p>
         }
     },
 
-    _extendObject: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">obj, attributes</span>) </span>{
+    <span class="hljs-attr">_extendObject</span>: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">obj, attributes</span>) </span>{
         <span class="hljs-keyword">if</span> (!obj.prototype.__super__) {
             obj.prototype.__super__ = {};
             obj.prototype.__super__[<span class="hljs-keyword">this</span>.name] = <span class="hljs-keyword">this</span>.plugged;
@@ -201,8 +205,11 @@ original method.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>                <span class="hljs-keyword">let</span> wrapped_function = _.partial(
-                    that.wrappedOverride, key, value, obj.prototype[key]
+            <div class="content"><div class='highlight'><pre>                <span class="hljs-keyword">let</span> default_super = {};
+                default_super[that.name] = that.plugged;
+
+                <span class="hljs-keyword">let</span> wrapped_function = _.partial(
+                    that.wrappedOverride, key, value, obj.prototype[key], default_super
                 );
                 obj.prototype[key] = wrapped_function;
             } <span class="hljs-keyword">else</span> {
@@ -251,7 +258,7 @@ on the object being made pluggable (i.e. the object passed to
         });
     },
 
-    throwUndefinedDependencyError: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">msg</span>) </span>{
+    <span class="hljs-attr">throwUndefinedDependencyError</span>: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">msg</span>) </span>{
         <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.plugged.strict_plugin_dependencies) {
             <span class="hljs-keyword">throw</span> msg;
         } <span class="hljs-keyword">else</span> {
@@ -302,7 +309,7 @@ are defined on any of the plugins.</p>
                 <a class="pilcrow" href="#section-10">&#182;</a>
               </div>
               <p><code>initializePlugin</code> applies the overrides (if any) defined on all
-the registered plugins and then calls the initialize method for each plugin.</p>
+the registered plugins and then calls the initialize method of the plugin</p>
 
             </div>
             
@@ -317,15 +324,20 @@ the registered plugins and then calls the initialize method for each plugin.</p>
             */</span>
             <span class="hljs-keyword">return</span>;
         }
-        _.extend(plugin, <span class="hljs-keyword">this</span>.properties);
-        <span class="hljs-keyword">if</span> (plugin.optional_dependencies) {
-            <span class="hljs-keyword">this</span>.loadOptionalDependencies(plugin);
+        <span class="hljs-keyword">if</span> (_.isBoolean(plugin.enabled) &amp;&amp; plugin.enabled ||
+            _.isFunction(plugin.enabled) &amp;&amp; plugin.enabled(<span class="hljs-keyword">this</span>.plugged) ||
+            _.isNil(plugin.enabled)) {
+
+            _.extend(plugin, <span class="hljs-keyword">this</span>.properties);
+            <span class="hljs-keyword">if</span> (plugin.optional_dependencies) {
+                <span class="hljs-keyword">this</span>.loadOptionalDependencies(plugin);
+            }
+            <span class="hljs-keyword">this</span>.applyOverrides(plugin);
+            <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> plugin.initialize === <span class="hljs-string">"function"</span>) {
+                plugin.initialize.bind(plugin)(<span class="hljs-keyword">this</span>);
+            }
+            <span class="hljs-keyword">this</span>.initialized_plugins.push(plugin.__name__);
         }
-        <span class="hljs-keyword">this</span>.applyOverrides(plugin);
-        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> plugin.initialize === <span class="hljs-string">"function"</span>) {
-            plugin.initialize.bind(plugin)(<span class="hljs-keyword">this</span>);
-        }
-        <span class="hljs-keyword">this</span>.initialized_plugins.push(plugin.__name__);
     },</pre></div></div>
             
         </li>
