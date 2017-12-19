@@ -26,7 +26,7 @@
     "babelify": "^7.3.0",
     "browser-run": "^4.0.2",
     "browserify": "^14.0.0",
-    "docco": "^0.7.0",
+    "docco": "^0.8.0",
     "faucet": "0.0.1",
     "http-server": "^0.10.0",
     "lodash-cli": "^4.17.4",
