@@ -72,19 +72,20 @@
         // overriding method is called. This is done to enable
         // chaining of plugin methods, all the way up to the
         // original method.
-        wrappedOverride: function wrappedOverride(key, value, super_method) {
+        wrappedOverride: function wrappedOverride(key, value, super_method, default_super) {
             if (typeof super_method === "function") {
                 if (typeof this.__super__ === "undefined") {
                     /* We're not on the context of the plugged object.
-                    * This can happen when the overridden method is called via
-                    * an event handler. In this case, we simply tack on the
-                    * __super__ obj.
-                    */
-                    this.__super__ = {};
+                     * This can happen when the overridden method is called via
+                     * an event handler or when it's a constructor.
+                     *
+                     * In this case, we simply tack on the  __super__ obj.
+                     */
+                    this.__super__ = default_super;
                 }
                 this.__super__[key] = super_method.bind(this);
             }
-            return value.apply(this, _.drop(arguments, 3));
+            return value.apply(this, _.drop(arguments, 4));
         },
 
         // `_overrideAttribute` overrides an attribute on the original object
@@ -105,7 +106,10 @@
         _overrideAttribute: function _overrideAttribute(key, plugin) {
             var value = plugin.overrides[key];
             if (typeof value === "function") {
-                var wrapped_function = _.partial(this.wrappedOverride, key, value, this.plugged[key]);
+                var default_super = {};
+                default_super[this.name] = this.plugged;
+
+                var wrapped_function = _.partial(this.wrappedOverride, key, value, this.plugged[key], default_super);
                 this.plugged[key] = wrapped_function;
             } else {
                 this.plugged[key] = value;
@@ -127,7 +131,10 @@
                     // overriding method is called. This is done to enable
                     // chaining of plugin methods, all the way up to the
                     // original method.
-                    var wrapped_function = _.partial(that.wrappedOverride, key, value, obj.prototype[key]);
+                    var default_super = {};
+                    default_super[that.name] = that.plugged;
+
+                    var wrapped_function = _.partial(that.wrappedOverride, key, value, obj.prototype[key], default_super);
                     obj.prototype[key] = wrapped_function;
                 } else {
                     obj.prototype[key] = value;
@@ -191,7 +198,7 @@
         },
 
         // `initializePlugin` applies the overrides (if any) defined on all
-        // the registered plugins and then calls the initialize method for each plugin.
+        // the registered plugins and then calls the initialize method of the plugin
         initializePlugin: function initializePlugin(plugin) {
             if (!_.includes(_.keys(this.allowed_plugins), plugin.__name__)) {
                 /* Don't initialize disallowed plugins. */
@@ -203,15 +210,18 @@
                 */
                 return;
             }
-            _.extend(plugin, this.properties);
-            if (plugin.optional_dependencies) {
-                this.loadOptionalDependencies(plugin);
+            if (_.isBoolean(plugin.enabled) && plugin.enabled || _.isFunction(plugin.enabled) && plugin.enabled(this.plugged) || _.isNil(plugin.enabled)) {
+
+                _.extend(plugin, this.properties);
+                if (plugin.optional_dependencies) {
+                    this.loadOptionalDependencies(plugin);
+                }
+                this.applyOverrides(plugin);
+                if (typeof plugin.initialize === "function") {
+                    plugin.initialize.bind(plugin)(this);
+                }
+                this.initialized_plugins.push(plugin.__name__);
             }
-            this.applyOverrides(plugin);
-            if (typeof plugin.initialize === "function") {
-                plugin.initialize.bind(plugin)(this);
-            }
-            this.initialized_plugins.push(plugin.__name__);
         },
 
         // `registerPlugin` registers (or inserts, if you'd like) a plugin,

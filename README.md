@@ -9,6 +9,8 @@
 
 # Introduction
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/jcbrand/pluggable.js.svg)](https://greenkeeper.io/)
+
 pluggable.js lets you make your JS project extendable via plugins, while still
 keeping sensitive objects and data private through closures.
 

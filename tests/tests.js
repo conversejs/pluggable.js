@@ -37,6 +37,43 @@ test('Plugin registration', (assert) => {
     assert.end();
 });
 
+test('disable initialization', (assert) => {
+    app.makePluggable();
+    let disabled_plugin_initialized = false;
+    let enabled_plugin_initialized = false;
+
+    app.registerPlugin('disabled-plugin', {
+        enabled () { return false },
+        overrides: {
+            foo: 'bar'
+        },
+        initialize () {
+            disabled_plugin_initialized = true;
+        }
+    });
+    app.registerPlugin('enabled-plugin', {
+        enabled () { return true },
+        overrides: {
+            baz () { return 'buz' }
+        },
+        initialize () {
+            enabled_plugin_initialized = true;
+        }
+    });
+    app.initialize();
+
+    assert.ok(
+        enabled_plugin_initialized === true &&
+        disabled_plugin_initialized === false,
+        "A plugin with an 'enable' method which returns false, is not initialized"
+    )
+    assert.ok(
+        app.getClosuredApp().baz() === 'buz' && _.has(app.getClosuredApp(), 'foo') === false,
+        "A plugin with an 'enable' method which returns false, does not have its overrides applied"
+    )
+    assert.end();
+});
+
 test('blacklisting of plugins', (assert) => {
     app.makePluggable();
     app.registerPlugin('allowed-plugin', {});
