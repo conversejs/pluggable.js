@@ -19,7 +19,7 @@ stamp-npm: package.json
 check: stamp-npm
 	$(BABEL-NODE) tests/tests.js | $(FAUCET)
 
-.PHONE: browser-check
+.PHONY: browser-check
 browser-check: stamp-npm
 	$(BROWSERIFY) -t babelify tests/tests.js | $(BROWSER-RUN) -p 8022
 
