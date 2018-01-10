@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.0.0 (Unreleased)
+## 2.0.0 (2018-01-10)
 
 - Rename the `optional_dependencies` option to `dependencies`, since they're
   not necessarily optional and the original name is misleading.
