@@ -227,23 +227,20 @@ original method.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-8">&#182;</a>
               </div>
-              <p>Plugins can specify optional dependencies (by means of the
-<code>optional_dependencies</code> list attribute) which refers to dependencies
-which will be initialized first, before the plugin itself gets initialized.
-They are optional in the sense that if they aren’t available, an
-error won’t be thrown.
-However, if you want to make these dependencies strict (i.e.
-non-optional), you can set the <code>strict_plugin_dependencies</code> attribute to <code>true</code>
-on the object being made pluggable (i.e. the object passed to
-<code>pluggable.enable</code>).</p>
+              <p>Plugins can specify dependencies (by means of the
+<code>dependencies</code> list attribute) which refers to dependencies
+which will be initialized first, before the plugin itself gets initialized.</p>
+<p>If <code>strict_plugin_dependencies</code> is set to <code>false</code> (on the object being
+made pluggable), then no error will be thrown if any of these plugins aren’t
+available.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    loadOptionalDependencies: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">plugin</span>) </span>{
-        _.each(plugin.optional_dependencies, (name) =&gt; {
+            <div class="content"><div class='highlight'><pre>    loadPluginDependencies: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">plugin</span>) </span>{
+        _.each(plugin.dependencies, (name) =&gt; {
             <span class="hljs-keyword">let</span> dep = <span class="hljs-keyword">this</span>.plugins[name];
             <span class="hljs-keyword">if</span> (dep) {
-                <span class="hljs-keyword">if</span> (_.includes(dep.optional_dependencies, plugin.__name__)) {
+                <span class="hljs-keyword">if</span> (_.includes(dep.dependencies, plugin.__name__)) {
                     <span class="hljs-comment">/* <span class="hljs-doctag">FIXME:</span> circular dependency checking is only one level deep. */</span>
                     <span class="hljs-keyword">throw</span> <span class="hljs-string">"Found a circular dependency between the plugins \""</span>+
                         plugin.__name__+<span class="hljs-string">"\" and \""</span>+name+<span class="hljs-string">"\""</span>;
@@ -329,8 +326,8 @@ the registered plugins and then calls the initialize method of the plugin</p>
             _.isNil(plugin.enabled)) {
 
             _.extend(plugin, <span class="hljs-keyword">this</span>.properties);
-            <span class="hljs-keyword">if</span> (plugin.optional_dependencies) {
-                <span class="hljs-keyword">this</span>.loadOptionalDependencies(plugin);
+            <span class="hljs-keyword">if</span> (plugin.dependencies) {
+                <span class="hljs-keyword">this</span>.loadPluginDependencies(plugin);
             }
             <span class="hljs-keyword">this</span>.applyOverrides(plugin);
             <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> plugin.initialize === <span class="hljs-string">"function"</span>) {
