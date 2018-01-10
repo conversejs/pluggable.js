@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.0 (Unreleased)
+
+- Rename the `optional_dependencies` option to `dependencies`, since they're
+  not necessarily optional and the original name is misleading.
+
 ## 1.0.1 (2017-11-05)
 
 - Ensure that `plugged` obj is also available in overriden constructors

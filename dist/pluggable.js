@@ -142,22 +142,20 @@
             });
         },
 
-        // Plugins can specify optional dependencies (by means of the
-        // `optional_dependencies` list attribute) which refers to dependencies
+        // Plugins can specify dependencies (by means of the
+        // `dependencies` list attribute) which refers to dependencies
         // which will be initialized first, before the plugin itself gets initialized.
-        // They are optional in the sense that if they aren't available, an
-        // error won't be thrown.
-        // However, if you want to make these dependencies strict (i.e.
-        // non-optional), you can set the `strict_plugin_dependencies` attribute to `true`
-        // on the object being made pluggable (i.e. the object passed to
-        // `pluggable.enable`).
-        loadOptionalDependencies: function loadOptionalDependencies(plugin) {
+        //
+        // If `strict_plugin_dependencies` is set to `false` (on the object being
+        // made pluggable), then no error will be thrown if any of these plugins aren't
+        // available.
+        loadPluginDependencies: function loadPluginDependencies(plugin) {
             var _this = this;
 
-            _.each(plugin.optional_dependencies, function (name) {
+            _.each(plugin.dependencies, function (name) {
                 var dep = _this.plugins[name];
                 if (dep) {
-                    if (_.includes(dep.optional_dependencies, plugin.__name__)) {
+                    if (_.includes(dep.dependencies, plugin.__name__)) {
                         /* FIXME: circular dependency checking is only one level deep. */
                         throw "Found a circular dependency between the plugins \"" + plugin.__name__ + "\" and \"" + name + "\"";
                     }
@@ -213,8 +211,8 @@
             if (_.isBoolean(plugin.enabled) && plugin.enabled || _.isFunction(plugin.enabled) && plugin.enabled(this.plugged) || _.isNil(plugin.enabled)) {
 
                 _.extend(plugin, this.properties);
-                if (plugin.optional_dependencies) {
-                    this.loadOptionalDependencies(plugin);
+                if (plugin.dependencies) {
+                    this.loadPluginDependencies(plugin);
                 }
                 this.applyOverrides(plugin);
                 if (typeof plugin.initialize === "function") {
