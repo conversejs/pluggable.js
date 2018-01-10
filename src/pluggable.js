@@ -136,7 +136,7 @@ _.extend(PluginSocket.prototype, {
                 this.initializePlugin(dep);
             } else {
                 this.throwUndefinedDependencyError(
-                    "Could not find optional dependency \""+name+"\" "+
+                    "Could not find dependency \""+name+"\" "+
                     "for the plugin \""+plugin.__name__+"\". "+
                     "If it's needed, make sure it's loaded by require.js");
             }
