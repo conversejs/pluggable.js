@@ -5,11 +5,9 @@
     /_/   /_/\__,_/\__, /\__, /\__/_/_.___/_/\___(_)_/ /____/
                   /____//____/                    /___/ 
 
-[![Travis](https://api.travis-ci.org/jcbrand/pluggable.js.png?branch=master)](https://travis-ci.org/jcbrand/pluggable.js)
+[![Travis](https://api.travis-ci.org/conversejs/pluggable.js.png?branch=master)](https://travis-ci.org/jcbrand/pluggable.js)
 
 # Introduction
-
-[![Greenkeeper badge](https://badges.greenkeeper.io/jcbrand/pluggable.js.svg)](https://greenkeeper.io/)
 
 pluggable.js lets you make your JS project extendable via plugins, while still
 keeping sensitive objects and data private through closures.
