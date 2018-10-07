@@ -2,7 +2,7 @@
   "name": "pluggable.js",
   "version": "2.0.0",
   "description": "Lets you make your JS code pluggable while still keeping sensitive objects and data private through closures.",
-  "main": "pluggable.js",
+  "main": "dist/pluggable.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
