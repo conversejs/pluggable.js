@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.1 (2019-05-13)
+
+- Import lodash methods individually
+- Log not-found dependency messages as warnings.
+
 ## 2.0.0 (2018-01-10)
 
 - Rename the `optional_dependencies` option to `dependencies`, since they're
