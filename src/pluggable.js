@@ -159,8 +159,11 @@ extend(PluginSocket.prototype, {
         if (this.plugged.strict_plugin_dependencies) {
             throw msg;
         } else {
-            console.log(msg);
-            return;
+            if (console.warn) {
+                console.warn(msg);
+            } else {
+                console.log(msg);
+            }
         }
     },
 
