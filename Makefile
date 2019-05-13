@@ -44,11 +44,11 @@ lodash: 3rdparty/lodash.pluggable.js
 
 .PHONY: watchjs
 watchjs: stamp-npm
-	$(BABEL) --source-maps --out-file=./dist/pluggable.js --watch=src/pluggable.js
+	$(BABEL) --out-file=./dist/pluggable.js --watch=src/pluggable.js
 
 .PHONY: dist
 dist: lodash
-	$(BABEL) --source-maps --out-file=./dist/pluggable.js src/pluggable.js
+	$(BABEL) --out-file=./dist/pluggable.js src/pluggable.js
 
 .PHONY: release
 release:
