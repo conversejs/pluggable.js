@@ -57,7 +57,7 @@ people to be able to write plugins for this module, in which they can:
 
 - Access the private or closured scope of this module.
 - Add new methods to the module.
-- Override or extend existng methods (private or public) on this module.
+- Override or extend existing methods (private or public) on this module.
 
 To make the module pluggable, we simply call `pluggable.enable(module);`.
 Once we've made this call, the `module` object will have a new property
