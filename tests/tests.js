@@ -1,5 +1,4 @@
 import test from 'tape';
-import * as _ from 'lodash';
 import pluggable from '../src/pluggable';
 import * as app from './app';
 import plugin from './plugin';

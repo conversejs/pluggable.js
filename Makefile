@@ -36,18 +36,12 @@ clean:
 docs:
 	$(DOCCO) --css=stylesheets/docco.css src/pluggable.js
 
-.PHONY: lodash
-lodash: 3rdparty/lodash.pluggable.js
-
-3rdparty/lodash.pluggable.js:: stamp-npm FORCE
-	./node_modules/.bin/lodash -o ./3rdparty/lodash.pluggable.js include=drop,each,extend,includes,partial,size,pickBy,has
-
 .PHONY: watchjs
 watchjs: stamp-npm
 	$(BABEL) --out-file=./dist/pluggable.js --watch=src/pluggable.js
 
 .PHONY: dist
-dist: lodash
+dist:
 	$(BABEL) --out-file=./dist/pluggable.js src/pluggable.js
 
 .PHONY: release

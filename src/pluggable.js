@@ -12,18 +12,18 @@
 
 /*global console */
 
-import drop from 'lodash/drop';
-import each from 'lodash/each';
-import extend from 'lodash/extend';
-import includes from 'lodash/includes';
-import isBoolean from 'lodash/isBoolean';
-import isFunction from 'lodash/isFunction';
-import isNil from 'lodash/isNil';
-import keys from 'lodash/keys';
-import partial from 'lodash/partial';
-import pickBy from 'lodash/pickBy';
-import size from 'lodash/size';
-import values from 'lodash/values';
+import drop from 'lodash-es/drop';
+import each from 'lodash-es/each';
+import extend from 'lodash-es/extend';
+import includes from 'lodash-es/includes';
+import isBoolean from 'lodash-es/isBoolean';
+import isFunction from 'lodash-es/isFunction';
+import isNil from 'lodash-es/isNil';
+import keys from 'lodash-es/keys';
+import partial from 'lodash-es/partial';
+import pickBy from 'lodash-es/pickBy';
+import size from 'lodash-es/size';
+import values from 'lodash-es/values';
 
 
 // The `PluginSocket` class contains the plugin architecture, and gets
@@ -87,12 +87,12 @@ extend(PluginSocket.prototype, {
     //
     // `plugin2.MyFunc.__super__.myFunc => plugin1.MyFunc.__super__.myFunc => original.myFunc`
     _overrideAttribute: function (key, plugin) {
-        let value = plugin.overrides[key];
+        const value = plugin.overrides[key];
         if (typeof value === "function") {
-            let default_super = {};
+            const default_super = {};
             default_super[this.name] = this.plugged;
 
-            let wrapped_function = partial(
+            const wrapped_function = partial(
                 this.wrappedOverride, key, value, this.plugged[key],  default_super
             );
             this.plugged[key] = wrapped_function;
@@ -106,7 +106,7 @@ extend(PluginSocket.prototype, {
             obj.prototype.__super__ = {};
             obj.prototype.__super__[this.name] = this.plugged;
         }
-        let that = this;
+        const that = this;
         each(attributes, function (value, key) {
             if (key === 'events') {
                 obj.prototype[key] = extend(value, obj.prototype[key]);
@@ -116,10 +116,10 @@ extend(PluginSocket.prototype, {
                 // overriding method is called. This is done to enable
                 // chaining of plugin methods, all the way up to the
                 // original method.
-                let default_super = {};
+                const default_super = {};
                 default_super[that.name] = that.plugged;
 
-                let wrapped_function = partial(
+                const wrapped_function = partial(
                     that.wrappedOverride, key, value, obj.prototype[key], default_super
                 );
                 obj.prototype[key] = wrapped_function;
@@ -138,7 +138,7 @@ extend(PluginSocket.prototype, {
     // available.
     loadPluginDependencies: function (plugin) {
         each(plugin.dependencies, (name) => {
-            let dep = this.plugins[name];
+            const dep = this.plugins[name];
             if (dep) {
                 if (includes(dep.dependencies, plugin.__name__)) {
                     /* FIXME: circular dependency checking is only one level deep. */
@@ -172,7 +172,7 @@ extend(PluginSocket.prototype, {
     // are defined on any of the plugins.
     applyOverrides: function (plugin) {
         each(Object.keys(plugin.overrides || {}), (key) => {
-            let override = plugin.overrides[key];
+            const override = plugin.overrides[key];
             if (typeof override === "object") {
                 if (typeof this.plugged[key] === 'undefined') {
                     this.throwUndefinedDependencyError(
@@ -262,7 +262,7 @@ function enable (object, name, attrname) {
     if (typeof name === 'undefined') {
         name = 'plugged';
     }
-    let ref = {};
+    const ref = {};
     ref[attrname] = new PluginSocket(object, name);
     return extend(object, ref);
 }
