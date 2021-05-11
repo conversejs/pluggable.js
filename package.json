@@ -39,6 +39,7 @@
     "browser-run": "^4.0.2",
     "browserify": "^15.0.0",
     "docco": "^0.7.0",
+    "eslint": "^7.26.0",
     "faucet": "0.0.1",
     "http-server": "^0.10.0",
     "rollup": "^1.32.1",

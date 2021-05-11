@@ -16,8 +16,6 @@ var _isNil = _interopRequireDefault(require("lodash-es/isNil.js"));
 
 var _partial = _interopRequireDefault(require("lodash-es/partial.js"));
 
-var _pickBy = _interopRequireDefault(require("lodash-es/pickBy.js"));
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
@@ -252,9 +250,18 @@ function PluginSocket(plugged, name) {
     }
 
     this.properties = properties;
-    this.allowed_plugins = (0, _pickBy["default"])(this.plugins, function (plugin, key) {
-      return (!whitelist.length || whitelist.length && whitelist.includes(key)) && !blacklist.includes(key);
-    });
+    this.allowed_plugins = {};
+
+    for (var _i2 = 0, _Object$entries2 = Object.entries(this.plugins); _i2 < _Object$entries2.length; _i2++) {
+      var _Object$entries2$_i = _slicedToArray(_Object$entries2[_i2], 2),
+          key = _Object$entries2$_i[0],
+          plugin = _Object$entries2$_i[1];
+
+      if ((!whitelist.length || whitelist.includes(key)) && !blacklist.includes(key)) {
+        this.allowed_plugins[key] = plugin;
+      }
+    }
+
     Object.values(this.allowed_plugins).forEach(function (o) {
       return _this3.initializePlugin(o);
     });
