@@ -32,6 +32,9 @@ clean:
 	-rm -f stamp-npm
 	-rm -rf node_modules
 
+node_modules: $(LERNA) package.json package-lock.json
+	npm i
+
 .PHONY: docs
 docs:
 	$(DOCCO) --css=stylesheets/docco.css src/pluggable.js
@@ -41,7 +44,8 @@ watchjs: stamp-npm
 	$(BABEL) --out-file=./dist/pluggable.js --watch=src/pluggable.js
 
 .PHONY: dist
-dist:
+dist: node_modules
+	npm run build
 	$(BABEL) --out-file=./dist/pluggable.js src/pluggable.js
 
 .PHONY: release

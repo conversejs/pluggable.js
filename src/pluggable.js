@@ -12,18 +12,18 @@
 
 /*global console */
 
-import drop from 'lodash-es/drop';
-import each from 'lodash-es/each';
-import extend from 'lodash-es/extend';
-import includes from 'lodash-es/includes';
-import isBoolean from 'lodash-es/isBoolean';
-import isFunction from 'lodash-es/isFunction';
-import isNil from 'lodash-es/isNil';
-import keys from 'lodash-es/keys';
-import partial from 'lodash-es/partial';
-import pickBy from 'lodash-es/pickBy';
-import size from 'lodash-es/size';
-import values from 'lodash-es/values';
+import drop from 'lodash-es/drop.js';
+import each from 'lodash-es/each.js';
+import extend from 'lodash-es/extend.js';
+import includes from 'lodash-es/includes.js';
+import isBoolean from 'lodash-es/isBoolean.js';
+import isFunction from 'lodash-es/isFunction.js';
+import isNil from 'lodash-es/isNil.js';
+import keys from 'lodash-es/keys.js';
+import partial from 'lodash-es/partial.js';
+import pickBy from 'lodash-es/pickBy.js';
+import size from 'lodash-es/size.js';
+import values from 'lodash-es/values.js';
 
 
 // The `PluginSocket` class contains the plugin architecture, and gets

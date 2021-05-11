@@ -1,73 +1,29 @@
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.enable = undefined;
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; /*
-                                                                                                                                                                                                                                                                                     ____  __                        __    __         _
-                                                                                                                                                                                                                                                                                    / __ \/ /_  __ ___   ___  ____ _/ /_  / /__      (_)____
-                                                                                                                                                                                                                                                                                   / /_/ / / / / / __ \/ __ \/ __/ / __ \/ / _ \    / / ___/
-                                                                                                                                                                                                                                                                                  / ____/ / /_/ / /_/ / /_/ / /_/ / /_/ / /  __/   / (__  )
-                                                                                                                                                                                                                                                                                 /_/   /_/\__,_/\__, /\__, /\__/_/_.___/_/\___(_)_/ /____/
-                                                                                                                                                                                                                                                                                               /____//____/                    /___/
-                                                                                                                                                                                                                                                                               */
+/*
+       ____  __                        __    __         _
+      / __ \/ /_  __ ___   ___  ____ _/ /_  / /__      (_)____
+     / /_/ / / / / / __ \/ __ \/ __/ / __ \/ / _ \    / / ___/
+    / ____/ / /_/ / /_/ / /_/ / /_/ / /_/ / /  __/   / (__  )
+   /_/   /_/\__,_/\__, /\__, /\__/_/_.___/_/\___(_)_/ /____/
+                 /____//____/                    /___/
+ */
 
 // Pluggable.js lets you to make your Javascript code pluggable while still
 // keeping sensitive objects and data private through closures.
 
 /*global console */
 
-var _drop = require('lodash-es/drop');
-
-var _drop2 = _interopRequireDefault(_drop);
-
-var _each = require('lodash-es/each');
-
-var _each2 = _interopRequireDefault(_each);
-
-var _extend = require('lodash-es/extend');
-
-var _extend2 = _interopRequireDefault(_extend);
-
-var _includes = require('lodash-es/includes');
-
-var _includes2 = _interopRequireDefault(_includes);
-
-var _isBoolean = require('lodash-es/isBoolean');
-
-var _isBoolean2 = _interopRequireDefault(_isBoolean);
-
-var _isFunction = require('lodash-es/isFunction');
-
-var _isFunction2 = _interopRequireDefault(_isFunction);
-
-var _isNil = require('lodash-es/isNil');
-
-var _isNil2 = _interopRequireDefault(_isNil);
-
-var _keys = require('lodash-es/keys');
-
-var _keys2 = _interopRequireDefault(_keys);
-
-var _partial = require('lodash-es/partial');
-
-var _partial2 = _interopRequireDefault(_partial);
-
-var _pickBy = require('lodash-es/pickBy');
-
-var _pickBy2 = _interopRequireDefault(_pickBy);
-
-var _size = require('lodash-es/size');
-
-var _size2 = _interopRequireDefault(_size);
-
-var _values = require('lodash-es/values');
-
-var _values2 = _interopRequireDefault(_values);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+import drop from 'lodash-es/drop.js';
+import each from 'lodash-es/each.js';
+import extend from 'lodash-es/extend.js';
+import includes from 'lodash-es/includes.js';
+import isBoolean from 'lodash-es/isBoolean.js';
+import isFunction from 'lodash-es/isFunction.js';
+import isNil from 'lodash-es/isNil.js';
+import keys from 'lodash-es/keys.js';
+import partial from 'lodash-es/partial.js';
+import pickBy from 'lodash-es/pickBy.js';
+import size from 'lodash-es/size.js';
+import values from 'lodash-es/values.js';
 
 // The `PluginSocket` class contains the plugin architecture, and gets
 // created whenever `pluggable.enable(obj);` is called on the object
@@ -91,14 +47,14 @@ function PluginSocket(plugged, name) {
 
 // Now we add methods to the PluginSocket by adding them to its
 // prototype.
-(0, _extend2.default)(PluginSocket.prototype, {
+extend(PluginSocket.prototype, {
 
     // `wrappedOverride` creates a partially applied wrapper function
     // that makes sure to set the proper super method when the
     // overriding method is called. This is done to enable
     // chaining of plugin methods, all the way up to the
     // original method.
-    wrappedOverride: function wrappedOverride(key, value, super_method, default_super) {
+    wrappedOverride: function (key, value, super_method, default_super) {
         if (typeof super_method === "function") {
             if (typeof this.__super__ === "undefined") {
                 /* We're not on the context of the plugged object.
@@ -111,7 +67,7 @@ function PluginSocket(plugged, name) {
             }
             this.__super__[key] = super_method.bind(this);
         }
-        return value.apply(this, (0, _drop2.default)(arguments, 4));
+        return value.apply(this, drop(arguments, 4));
     },
 
     // `_overrideAttribute` overrides an attribute on the original object
@@ -129,38 +85,38 @@ function PluginSocket(plugged, name) {
     // For example:
     //
     // `plugin2.MyFunc.__super__.myFunc => plugin1.MyFunc.__super__.myFunc => original.myFunc`
-    _overrideAttribute: function _overrideAttribute(key, plugin) {
-        var value = plugin.overrides[key];
+    _overrideAttribute: function (key, plugin) {
+        const value = plugin.overrides[key];
         if (typeof value === "function") {
-            var default_super = {};
+            const default_super = {};
             default_super[this.name] = this.plugged;
 
-            var wrapped_function = (0, _partial2.default)(this.wrappedOverride, key, value, this.plugged[key], default_super);
+            const wrapped_function = partial(this.wrappedOverride, key, value, this.plugged[key], default_super);
             this.plugged[key] = wrapped_function;
         } else {
             this.plugged[key] = value;
         }
     },
 
-    _extendObject: function _extendObject(obj, attributes) {
+    _extendObject: function (obj, attributes) {
         if (!obj.prototype.__super__) {
             obj.prototype.__super__ = {};
             obj.prototype.__super__[this.name] = this.plugged;
         }
-        var that = this;
-        (0, _each2.default)(attributes, function (value, key) {
+        const that = this;
+        each(attributes, function (value, key) {
             if (key === 'events') {
-                obj.prototype[key] = (0, _extend2.default)(value, obj.prototype[key]);
+                obj.prototype[key] = extend(value, obj.prototype[key]);
             } else if (typeof value === 'function') {
                 // We create a partially applied wrapper function, that
                 // makes sure to set the proper super method when the
                 // overriding method is called. This is done to enable
                 // chaining of plugin methods, all the way up to the
                 // original method.
-                var default_super = {};
+                const default_super = {};
                 default_super[that.name] = that.plugged;
 
-                var wrapped_function = (0, _partial2.default)(that.wrappedOverride, key, value, obj.prototype[key], default_super);
+                const wrapped_function = partial(that.wrappedOverride, key, value, obj.prototype[key], default_super);
                 obj.prototype[key] = wrapped_function;
             } else {
                 obj.prototype[key] = value;
@@ -175,24 +131,22 @@ function PluginSocket(plugged, name) {
     // If `strict_plugin_dependencies` is set to `false` (on the object being
     // made pluggable), then no error will be thrown if any of these plugins aren't
     // available.
-    loadPluginDependencies: function loadPluginDependencies(plugin) {
-        var _this = this;
-
-        (0, _each2.default)(plugin.dependencies, function (name) {
-            var dep = _this.plugins[name];
+    loadPluginDependencies: function (plugin) {
+        each(plugin.dependencies, name => {
+            const dep = this.plugins[name];
             if (dep) {
-                if ((0, _includes2.default)(dep.dependencies, plugin.__name__)) {
+                if (includes(dep.dependencies, plugin.__name__)) {
                     /* FIXME: circular dependency checking is only one level deep. */
                     throw "Found a circular dependency between the plugins \"" + plugin.__name__ + "\" and \"" + name + "\"";
                 }
-                _this.initializePlugin(dep);
+                this.initializePlugin(dep);
             } else {
-                _this.throwUndefinedDependencyError("Could not find dependency \"" + name + "\" " + "for the plugin \"" + plugin.__name__ + "\". " + "If it's needed, make sure it's loaded by require.js");
+                this.throwUndefinedDependencyError("Could not find dependency \"" + name + "\" " + "for the plugin \"" + plugin.__name__ + "\". " + "If it's needed, make sure it's loaded by require.js");
             }
         });
     },
 
-    throwUndefinedDependencyError: function throwUndefinedDependencyError(msg) {
+    throwUndefinedDependencyError: function (msg) {
         if (this.plugged.strict_plugin_dependencies) {
             throw msg;
         } else {
@@ -207,39 +161,37 @@ function PluginSocket(plugged, name) {
     // `applyOverrides` is called by initializePlugin. It applies any
     // and all overrides of methods or Backbone views and models that
     // are defined on any of the plugins.
-    applyOverrides: function applyOverrides(plugin) {
-        var _this2 = this;
-
-        (0, _each2.default)(Object.keys(plugin.overrides || {}), function (key) {
-            var override = plugin.overrides[key];
-            if ((typeof override === 'undefined' ? 'undefined' : _typeof(override)) === "object") {
-                if (typeof _this2.plugged[key] === 'undefined') {
-                    _this2.throwUndefinedDependencyError('Plugin "' + plugin.__name__ + '" tried to override "' + key + '" but it\'s not found.');
+    applyOverrides: function (plugin) {
+        each(Object.keys(plugin.overrides || {}), key => {
+            const override = plugin.overrides[key];
+            if (typeof override === "object") {
+                if (typeof this.plugged[key] === 'undefined') {
+                    this.throwUndefinedDependencyError(`Plugin "${plugin.__name__}" tried to override "${key}" but it's not found.`);
                 } else {
-                    _this2._extendObject(_this2.plugged[key], override);
+                    this._extendObject(this.plugged[key], override);
                 }
             } else {
-                _this2._overrideAttribute(key, plugin);
+                this._overrideAttribute(key, plugin);
             }
         });
     },
 
     // `initializePlugin` applies the overrides (if any) defined on all
     // the registered plugins and then calls the initialize method of the plugin
-    initializePlugin: function initializePlugin(plugin) {
-        if (!(0, _includes2.default)((0, _keys2.default)(this.allowed_plugins), plugin.__name__)) {
+    initializePlugin: function (plugin) {
+        if (!includes(keys(this.allowed_plugins), plugin.__name__)) {
             /* Don't initialize disallowed plugins. */
             return;
         }
-        if ((0, _includes2.default)(this.initialized_plugins, plugin.__name__)) {
+        if (includes(this.initialized_plugins, plugin.__name__)) {
             /* Don't initialize plugins twice, otherwise we get
             * infinite recursion in overridden methods.
             */
             return;
         }
-        if ((0, _isBoolean2.default)(plugin.enabled) && plugin.enabled || (0, _isFunction2.default)(plugin.enabled) && plugin.enabled(this.plugged) || (0, _isNil2.default)(plugin.enabled)) {
+        if (isBoolean(plugin.enabled) && plugin.enabled || isFunction(plugin.enabled) && plugin.enabled(this.plugged) || isNil(plugin.enabled)) {
 
-            (0, _extend2.default)(plugin, this.properties);
+            extend(plugin, this.properties);
             if (plugin.dependencies) {
                 this.loadPluginDependencies(plugin);
             }
@@ -253,7 +205,7 @@ function PluginSocket(plugged, name) {
 
     // `registerPlugin` registers (or inserts, if you'd like) a plugin,
     // by adding it to the `plugins` map on the PluginSocket instance.
-    registerPlugin: function registerPlugin(name, plugin) {
+    registerPlugin: function (name, plugin) {
         if (name in this.plugins) {
             throw new Error('Error: Plugin name ' + name + ' is already taken');
         }
@@ -266,19 +218,15 @@ function PluginSocket(plugged, name) {
     // `initializePlugin` for each.
     // The passed in  properties variable is an object with attributes and methods
     // which will be attached to the plugins.
-    initializePlugins: function initializePlugins() {
-        var properties = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-        var whitelist = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
-        var blacklist = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
-
-        if (!(0, _size2.default)(this.plugins)) {
+    initializePlugins: function (properties = {}, whitelist = [], blacklist = []) {
+        if (!size(this.plugins)) {
             return;
         }
         this.properties = properties;
-        this.allowed_plugins = (0, _pickBy2.default)(this.plugins, function (plugin, key) {
-            return (!whitelist.length || whitelist.length && (0, _includes2.default)(whitelist, key)) && !(0, _includes2.default)(blacklist, key);
+        this.allowed_plugins = pickBy(this.plugins, function (plugin, key) {
+            return (!whitelist.length || whitelist.length && includes(whitelist, key)) && !includes(blacklist, key);
         });
-        (0, _each2.default)((0, _values2.default)(this.allowed_plugins), this.initializePlugin.bind(this));
+        each(values(this.allowed_plugins), this.initializePlugin.bind(this));
     }
 });
 
@@ -299,12 +247,12 @@ function enable(object, name, attrname) {
     if (typeof name === 'undefined') {
         name = 'plugged';
     }
-    var ref = {};
+    const ref = {};
     ref[attrname] = new PluginSocket(object, name);
-    return (0, _extend2.default)(object, ref);
+    return extend(object, ref);
 }
 
-exports.enable = enable;
-exports.default = {
-    enable: enable
+export { enable };
+export default {
+    enable
 };

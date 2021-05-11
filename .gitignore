@@ -2,3 +2,6 @@ node_modules
 stamp-npm
 *~
 .*sw?
+dist/pluggable-with-lodash.js
+dist/pluggable-with-lodash.js.map
+dist/pluggable.map

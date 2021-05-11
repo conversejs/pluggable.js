@@ -1,4 +1,4 @@
-const plugin = { 
+const plugin = {
     overrides: {},
 
     initialize: function (socket) {
