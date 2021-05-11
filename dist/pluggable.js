@@ -14,8 +14,6 @@ var _isFunction = _interopRequireDefault(require("lodash-es/isFunction.js"));
 
 var _isNil = _interopRequireDefault(require("lodash-es/isNil.js"));
 
-var _partial = _interopRequireDefault(require("lodash-es/partial.js"));
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
@@ -97,24 +95,34 @@ function PluginSocket(plugged, name) {
   //
   // `plugin2.MyFunc.__super__.myFunc => plugin1.MyFunc.__super__.myFunc => original.myFunc`
   _overrideAttribute: function _overrideAttribute(key, plugin) {
+    var _this = this;
+
     var value = plugin.overrides[key];
 
     if (typeof value === "function") {
       var default_super = {};
       default_super[this.name] = this.plugged;
-      var wrapped_function = (0, _partial["default"])(this.wrappedOverride, key, value, this.plugged[key], default_super);
-      this.plugged[key] = wrapped_function;
+
+      this.plugged[key] = function () {
+        for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+          args[_key] = arguments[_key];
+        }
+
+        return _this.wrappedOverride.apply(_this, [key, value, _this.plugged[key], default_super].concat(args));
+      };
     } else {
       this.plugged[key] = value;
     }
   },
   _extendObject: function _extendObject(obj, attributes) {
+    var _this2 = this;
+
     if (!obj.prototype.__super__) {
       obj.prototype.__super__ = {};
       obj.prototype.__super__[this.name] = this.plugged;
     }
 
-    for (var _i = 0, _Object$entries = Object.entries(attributes); _i < _Object$entries.length; _i++) {
+    var _loop = function _loop() {
       var _Object$entries$_i = _slicedToArray(_Object$entries[_i], 2),
           key = _Object$entries$_i[0],
           value = _Object$entries$_i[1];
@@ -128,12 +136,22 @@ function PluginSocket(plugged, name) {
         // chaining of plugin methods, all the way up to the
         // original method.
         var default_super = {};
-        default_super[this.name] = this.plugged;
-        var wrapped_function = (0, _partial["default"])(this.wrappedOverride, key, value, obj.prototype[key], default_super);
-        obj.prototype[key] = wrapped_function;
+        default_super[_this2.name] = _this2.plugged;
+
+        obj.prototype[key] = function () {
+          for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+            args[_key2] = arguments[_key2];
+          }
+
+          return _this2.wrappedOverride.apply(_this2, [key, value, obj.prototype[key], default_super].concat(args));
+        };
       } else {
         obj.prototype[key] = value;
       }
+    };
+
+    for (var _i = 0, _Object$entries = Object.entries(attributes); _i < _Object$entries.length; _i++) {
+      _loop();
     }
   },
   // Plugins can specify dependencies (by means of the
@@ -144,10 +162,10 @@ function PluginSocket(plugged, name) {
   // made pluggable), then no error will be thrown if any of these plugins aren't
   // available.
   loadPluginDependencies: function loadPluginDependencies(plugin) {
-    var _this = this;
+    var _this3 = this;
 
     plugin.dependencies.forEach(function (name) {
-      var dep = _this.plugins[name];
+      var dep = _this3.plugins[name];
 
       if (dep) {
         if (dep.dependencies.includes(plugin.__name__)) {
@@ -155,9 +173,9 @@ function PluginSocket(plugged, name) {
           throw "Found a circular dependency between the plugins \"" + plugin.__name__ + "\" and \"" + name + "\"";
         }
 
-        _this.initializePlugin(dep);
+        _this3.initializePlugin(dep);
       } else {
-        _this.throwUndefinedDependencyError("Could not find dependency \"" + name + "\" " + "for the plugin \"" + plugin.__name__ + "\". " + "If it's needed, make sure it's loaded by require.js");
+        _this3.throwUndefinedDependencyError("Could not find dependency \"" + name + "\" " + "for the plugin \"" + plugin.__name__ + "\". " + "If it's needed, make sure it's loaded by require.js");
       }
     });
   },
@@ -176,19 +194,19 @@ function PluginSocket(plugged, name) {
   // and all overrides of methods or Backbone views and models that
   // are defined on any of the plugins.
   applyOverrides: function applyOverrides(plugin) {
-    var _this2 = this;
+    var _this4 = this;
 
     Object.keys(plugin.overrides || {}).forEach(function (key) {
       var override = plugin.overrides[key];
 
       if (_typeof(override) === "object") {
-        if (typeof _this2.plugged[key] === 'undefined') {
-          _this2.throwUndefinedDependencyError("Plugin \"".concat(plugin.__name__, "\" tried to override \"").concat(key, "\" but it's not found."));
+        if (typeof _this4.plugged[key] === 'undefined') {
+          _this4.throwUndefinedDependencyError("Plugin \"".concat(plugin.__name__, "\" tried to override \"").concat(key, "\" but it's not found."));
         } else {
-          _this2._extendObject(_this2.plugged[key], override);
+          _this4._extendObject(_this4.plugged[key], override);
         }
       } else {
-        _this2._overrideAttribute(key, plugin);
+        _this4._overrideAttribute(key, plugin);
       }
     });
   },
@@ -239,7 +257,7 @@ function PluginSocket(plugged, name) {
   // The passed in  properties variable is an object with attributes and methods
   // which will be attached to the plugins.
   initializePlugins: function initializePlugins() {
-    var _this3 = this;
+    var _this5 = this;
 
     var properties = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var whitelist = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
@@ -263,7 +281,7 @@ function PluginSocket(plugged, name) {
     }
 
     Object.values(this.allowed_plugins).forEach(function (o) {
-      return _this3.initializePlugin(o);
+      return _this5.initializePlugin(o);
     });
   }
 });

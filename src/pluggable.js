@@ -14,7 +14,6 @@ import extend from 'lodash-es/extend.js';
 import isBoolean from 'lodash-es/isBoolean.js';
 import isFunction from 'lodash-es/isFunction.js';
 import isNil from 'lodash-es/isNil.js';
-import partial from 'lodash-es/partial.js';
 
 
 // The `PluginSocket` class contains the plugin architecture, and gets
@@ -46,7 +45,7 @@ extend(PluginSocket.prototype, {
     // overriding method is called. This is done to enable
     // chaining of plugin methods, all the way up to the
     // original method.
-    wrappedOverride: function (key, value, super_method, default_super) {
+    wrappedOverride: function (key, value, super_method, default_super, ...args) {
         if (typeof super_method === "function") {
             if (typeof this.__super__ === "undefined") {
                 /* We're not on the context of the plugged object.
@@ -59,7 +58,7 @@ extend(PluginSocket.prototype, {
             }
             this.__super__[key] = super_method.bind(this);
         }
-        return value.apply(this, Array.from(arguments).slice(4));
+        return value.apply(this, args);
     },
 
     // `_overrideAttribute` overrides an attribute on the original object
@@ -82,11 +81,8 @@ extend(PluginSocket.prototype, {
         if (typeof value === "function") {
             const default_super = {};
             default_super[this.name] = this.plugged;
-
-            const wrapped_function = partial(
-                this.wrappedOverride, key, value, this.plugged[key],  default_super
-            );
-            this.plugged[key] = wrapped_function;
+            this.plugged[key] = (...args) =>
+                this.wrappedOverride(key, value, this.plugged[key],  default_super, ...args);
         } else {
             this.plugged[key] = value;
         }
@@ -108,11 +104,8 @@ extend(PluginSocket.prototype, {
                 // original method.
                 const default_super = {};
                 default_super[this.name] = this.plugged;
-
-                const wrapped_function = partial(
-                    this.wrappedOverride, key, value, obj.prototype[key], default_super
-                );
-                obj.prototype[key] = wrapped_function;
+                obj.prototype[key] = (...args) =>
+                    this.wrappedOverride(key, value, obj.prototype[key], default_super, ...args);
             } else {
                 obj.prototype[key] = value;
             }
