@@ -10,10 +10,8 @@
 // Pluggable.js lets you to make your Javascript code pluggable while still
 // keeping sensitive objects and data private through closures.
 
-import extend from 'lodash-es/extend.js';
 import isBoolean from 'lodash-es/isBoolean.js';
 import isFunction from 'lodash-es/isFunction.js';
-import isNil from 'lodash-es/isNil.js';
 
 
 // The `PluginSocket` class contains the plugin architecture, and gets
@@ -23,29 +21,27 @@ import isNil from 'lodash-es/isNil.js';
 // It takes two parameters, first, the object being made pluggable, and
 // then the name by which the pluggable object may be referenced on the
 // __super__ object (inside overrides).
-function PluginSocket (plugged, name) {
-    this.name = name;
-    this.plugged = plugged;
-    if (typeof this.plugged.__super__ === 'undefined') {
-        this.plugged.__super__ = {};
-    } else if (typeof this.plugged.__super__ === 'string') {
-        this.plugged.__super__ = { '__string__': this.plugged.__super__ };
-    }
-    this.plugged.__super__[name] = this.plugged;
-    this.plugins = {};
-    this.initialized_plugins = [];
-}
+class PluginSocket {
 
-// Now we add methods to the PluginSocket by adding them to its
-// prototype.
-extend(PluginSocket.prototype, {
+    constructor (plugged, name) {
+        this.name = name;
+        this.plugged = plugged;
+        if (typeof this.plugged.__super__ === 'undefined') {
+            this.plugged.__super__ = {};
+        } else if (typeof this.plugged.__super__ === 'string') {
+            this.plugged.__super__ = { '__string__': this.plugged.__super__ };
+        }
+        this.plugged.__super__[name] = this.plugged;
+        this.plugins = {};
+        this.initialized_plugins = [];
+    }
 
     // `wrappedOverride` creates a partially applied wrapper function
     // that makes sure to set the proper super method when the
     // overriding method is called. This is done to enable
     // chaining of plugin methods, all the way up to the
     // original method.
-    wrappedOverride: function (key, value, super_method, default_super, ...args) {
+    wrappedOverride (key, value, super_method, default_super, ...args) {
         if (typeof super_method === "function") {
             if (typeof this.__super__ === "undefined") {
                 /* We're not on the context of the plugged object.
@@ -59,7 +55,7 @@ extend(PluginSocket.prototype, {
             this.__super__[key] = super_method.bind(this);
         }
         return value.apply(this, args);
-    },
+    }
 
     // `_overrideAttribute` overrides an attribute on the original object
     // (the thing being plugged into).
@@ -76,7 +72,7 @@ extend(PluginSocket.prototype, {
     // For example:
     //
     // `plugin2.MyFunc.__super__.myFunc => plugin1.MyFunc.__super__.myFunc => original.myFunc`
-    _overrideAttribute: function (key, plugin) {
+    _overrideAttribute (key, plugin) {
         const value = plugin.overrides[key];
         if (typeof value === "function") {
             const default_super = {};
@@ -86,16 +82,16 @@ extend(PluginSocket.prototype, {
         } else {
             this.plugged[key] = value;
         }
-    },
+    }
 
-    _extendObject: function (obj, attributes) {
+    _extendObject (obj, attributes) {
         if (!obj.prototype.__super__) {
             obj.prototype.__super__ = {};
             obj.prototype.__super__[this.name] = this.plugged;
         }
         for (const [key, value] of Object.entries(attributes)) {
             if (key === 'events') {
-                obj.prototype[key] = extend(value, obj.prototype[key]);
+                obj.prototype[key] = Object.assign(value, obj.prototype[key]);
             } else if (typeof value === 'function') {
                 // We create a partially applied wrapper function, that
                 // makes sure to set the proper super method when the
@@ -110,7 +106,7 @@ extend(PluginSocket.prototype, {
                 obj.prototype[key] = value;
             }
         }
-    },
+    }
 
     // Plugins can specify dependencies (by means of the
     // `dependencies` list attribute) which refers to dependencies
@@ -119,7 +115,7 @@ extend(PluginSocket.prototype, {
     // If `strict_plugin_dependencies` is set to `false` (on the object being
     // made pluggable), then no error will be thrown if any of these plugins aren't
     // available.
-    loadPluginDependencies: function (plugin) {
+    loadPluginDependencies (plugin) {
         plugin.dependencies.forEach(name => {
             const dep = this.plugins[name];
             if (dep) {
@@ -136,9 +132,9 @@ extend(PluginSocket.prototype, {
                     "If it's needed, make sure it's loaded by require.js");
             }
         });
-    },
+    }
 
-    throwUndefinedDependencyError: function (msg) {
+    throwUndefinedDependencyError (msg) {
         if (this.plugged.strict_plugin_dependencies) {
             throw msg;
         } else {
@@ -148,12 +144,12 @@ extend(PluginSocket.prototype, {
                 console.log(msg);
             }
         }
-    },
+    }
 
     // `applyOverrides` is called by initializePlugin. It applies any
     // and all overrides of methods or Backbone views and models that
     // are defined on any of the plugins.
-    applyOverrides: function (plugin) {
+    applyOverrides (plugin) {
         Object.keys(plugin.overrides || {}).forEach(key => {
             const override = plugin.overrides[key];
             if (typeof override === "object") {
@@ -167,11 +163,11 @@ extend(PluginSocket.prototype, {
                 this._overrideAttribute(key, plugin);
             }
         });
-    },
+    }
 
     // `initializePlugin` applies the overrides (if any) defined on all
     // the registered plugins and then calls the initialize method of the plugin
-    initializePlugin: function (plugin) {
+    initializePlugin (plugin) {
         if (!Object.keys(this.allowed_plugins).includes(plugin.__name__)) {
             /* Don't initialize disallowed plugins. */
             return;
@@ -184,9 +180,9 @@ extend(PluginSocket.prototype, {
         }
         if (isBoolean(plugin.enabled) && plugin.enabled ||
             isFunction(plugin.enabled) && plugin.enabled(this.plugged) ||
-            isNil(plugin.enabled)) {
+            plugin.enabled == null) { // isNil
 
-            extend(plugin, this.properties);
+            Object.assign(plugin, this.properties);
             if (plugin.dependencies) {
                 this.loadPluginDependencies(plugin);
             }
@@ -196,24 +192,24 @@ extend(PluginSocket.prototype, {
             }
             this.initialized_plugins.push(plugin.__name__);
         }
-    },
+    }
 
     // `registerPlugin` registers (or inserts, if you'd like) a plugin,
     // by adding it to the `plugins` map on the PluginSocket instance.
-    registerPlugin: function (name, plugin) {
+    registerPlugin (name, plugin) {
         if (name in this.plugins) {
             throw new Error('Error: Plugin name '+name+' is already taken');
         }
         plugin.__name__ = name;
         this.plugins[name] = plugin;
-    },
+    }
 
     // `initializePlugins` should get called once all plugins have been
     // registered. It will then iterate through all the plugins, calling
     // `initializePlugin` for each.
     // The passed in  properties variable is an object with attributes and methods
     // which will be attached to the plugins.
-    initializePlugins: function (properties={}, whitelist=[], blacklist=[]) {
+    initializePlugins (properties={}, whitelist=[], blacklist=[]) {
         if (!Object.keys(this.plugins).length) {
             return;
         }
@@ -227,7 +223,7 @@ extend(PluginSocket.prototype, {
         }
         Object.values(this.allowed_plugins).forEach(o => this.initializePlugin(o));
     }
-});
+}
 
 function enable (object, name, attrname) {
     // Call the `enable` method to make an object pluggable
@@ -246,9 +242,8 @@ function enable (object, name, attrname) {
     if (typeof name === 'undefined') {
         name = 'plugged';
     }
-    const ref = {};
-    ref[attrname] = new PluginSocket(object, name);
-    return extend(object, ref);
+    object[attrname] = new PluginSocket(object, name);
+    return object;
 }
 
 export {
