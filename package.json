@@ -29,6 +29,7 @@
   "devDependencies": {
     "@babel/cli": "^7.13.16",
     "@babel/core": "^7.14.0",
+    "@babel/node": "^7.13.13",
     "@babel/plugin-external-helpers": "^7.12.13",
     "@babel/plugin-proposal-optional-chaining": "^7.13.12",
     "@babel/preset-env": "^7.14.1",
@@ -44,7 +45,6 @@
     "tape": "^5.2.2"
   },
   "dependencies": {
-    "@babel/node": "^7.13.13",
-    "lodash-es": "^4.17.15"
+    "lodash-es": "^4.17.21"
   }
 }

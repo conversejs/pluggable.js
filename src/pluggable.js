@@ -10,20 +10,11 @@
 // Pluggable.js lets you to make your Javascript code pluggable while still
 // keeping sensitive objects and data private through closures.
 
-/*global console */
-
-import drop from 'lodash-es/drop.js';
-import each from 'lodash-es/each.js';
 import extend from 'lodash-es/extend.js';
-import includes from 'lodash-es/includes.js';
 import isBoolean from 'lodash-es/isBoolean.js';
 import isFunction from 'lodash-es/isFunction.js';
 import isNil from 'lodash-es/isNil.js';
-import keys from 'lodash-es/keys.js';
 import partial from 'lodash-es/partial.js';
-import pickBy from 'lodash-es/pickBy.js';
-import size from 'lodash-es/size.js';
-import values from 'lodash-es/values.js';
 
 
 // The `PluginSocket` class contains the plugin architecture, and gets
@@ -68,7 +59,7 @@ extend(PluginSocket.prototype, {
             }
             this.__super__[key] = super_method.bind(this);
         }
-        return value.apply(this, drop(arguments, 4));
+        return value.apply(this, Array.from(arguments).slice(4));
     },
 
     // `_overrideAttribute` overrides an attribute on the original object
@@ -106,8 +97,7 @@ extend(PluginSocket.prototype, {
             obj.prototype.__super__ = {};
             obj.prototype.__super__[this.name] = this.plugged;
         }
-        const that = this;
-        each(attributes, function (value, key) {
+        for (const [key, value] of Object.entries(attributes)) {
             if (key === 'events') {
                 obj.prototype[key] = extend(value, obj.prototype[key]);
             } else if (typeof value === 'function') {
@@ -117,16 +107,16 @@ extend(PluginSocket.prototype, {
                 // chaining of plugin methods, all the way up to the
                 // original method.
                 const default_super = {};
-                default_super[that.name] = that.plugged;
+                default_super[this.name] = this.plugged;
 
                 const wrapped_function = partial(
-                    that.wrappedOverride, key, value, obj.prototype[key], default_super
+                    this.wrappedOverride, key, value, obj.prototype[key], default_super
                 );
                 obj.prototype[key] = wrapped_function;
             } else {
                 obj.prototype[key] = value;
             }
-        });
+        }
     },
 
     // Plugins can specify dependencies (by means of the
@@ -137,10 +127,10 @@ extend(PluginSocket.prototype, {
     // made pluggable), then no error will be thrown if any of these plugins aren't
     // available.
     loadPluginDependencies: function (plugin) {
-        each(plugin.dependencies, (name) => {
+        plugin.dependencies.forEach(name => {
             const dep = this.plugins[name];
             if (dep) {
-                if (includes(dep.dependencies, plugin.__name__)) {
+                if (dep.dependencies.includes(plugin.__name__)) {
                     /* FIXME: circular dependency checking is only one level deep. */
                     throw "Found a circular dependency between the plugins \""+
                         plugin.__name__+"\" and \""+name+"\"";
@@ -171,7 +161,7 @@ extend(PluginSocket.prototype, {
     // and all overrides of methods or Backbone views and models that
     // are defined on any of the plugins.
     applyOverrides: function (plugin) {
-        each(Object.keys(plugin.overrides || {}), (key) => {
+        Object.keys(plugin.overrides || {}).forEach(key => {
             const override = plugin.overrides[key];
             if (typeof override === "object") {
                 if (typeof this.plugged[key] === 'undefined') {
@@ -189,11 +179,11 @@ extend(PluginSocket.prototype, {
     // `initializePlugin` applies the overrides (if any) defined on all
     // the registered plugins and then calls the initialize method of the plugin
     initializePlugin: function (plugin) {
-        if (!includes(keys(this.allowed_plugins), plugin.__name__)) {
+        if (!Object.keys(this.allowed_plugins).includes(plugin.__name__)) {
             /* Don't initialize disallowed plugins. */
             return;
         }
-        if (includes(this.initialized_plugins, plugin.__name__)) {
+        if (this.initialized_plugins.includes(plugin.__name__)) {
             /* Don't initialize plugins twice, otherwise we get
             * infinite recursion in overridden methods.
             */
@@ -231,17 +221,18 @@ extend(PluginSocket.prototype, {
     // The passed in  properties variable is an object with attributes and methods
     // which will be attached to the plugins.
     initializePlugins: function (properties={}, whitelist=[], blacklist=[]) {
-        if (!size(this.plugins)) {
+        if (!Object.keys(this.plugins).length) {
             return;
         }
         this.properties = properties;
-        this.allowed_plugins  = pickBy(this.plugins,
-            function (plugin, key) {
-                return (!whitelist.length || (whitelist.length && includes(whitelist, key))) &&
-                    !includes(blacklist, key);
+        this.allowed_plugins = {};
+
+        for (const [key, plugin] of Object.entries(this.plugins)) {
+            if ((!whitelist.length || whitelist.includes(key)) && !blacklist.includes(key)) {
+                this.allowed_plugins[key] = plugin;
             }
-        );
-        each(values(this.allowed_plugins), this.initializePlugin.bind(this));
+        }
+        Object.values(this.allowed_plugins).forEach(o => this.initializePlugin(o));
     }
 });
 

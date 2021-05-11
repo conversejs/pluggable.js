@@ -78,14 +78,14 @@ test('blacklisting of plugins', (assert) => {
     app.registerPlugin('blacklisted-plugin', {});
     app.initialize([], ['blacklisted-plugin']);
 
-    let allowed_plugins = app.getPluginSocket().allowed_plugins;
+    const allowed_plugins = app.getPluginSocket().allowed_plugins;
     assert.ok(
         ('blacklisted-plugin' in allowed_plugins) === false &&
         ('allowed-plugin' in allowed_plugins) === true,
         "A blacklisted plugin will be excluded from the allowed_plugins list"
     );
 
-    let initialized_plugins = app.getPluginSocket().initialized_plugins;
+    const initialized_plugins = app.getPluginSocket().initialized_plugins;
     assert.ok(
         initialized_plugins.includes('blacklisted-plugin') === false &&
         initialized_plugins.includes('allowed-plugin') === true,
