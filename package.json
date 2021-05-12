@@ -1,6 +1,6 @@
 {
   "name": "pluggable.js",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "description": "Lets you make your JS code pluggable while still keeping sensitive objects and data private through closures.",
   "main": "dist/pluggable.js",
   "scripts": {
