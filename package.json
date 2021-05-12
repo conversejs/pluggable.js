@@ -15,7 +15,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jcbrand/pluggable.js.git"
+    "url": "git+https://github.com/conversejs/pluggable.js.git"
   },
   "keywords": [
     "plugin"
@@ -23,9 +23,9 @@
   "author": "JC Brand <jc@opkode.com> (http://opkode.com/)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jcbrand/pluggable.js/issues"
+    "url": "https://github.com/conversejs/pluggable.js/issues"
   },
-  "homepage": "https://github.com/jcbrand/pluggable.js#readme",
+  "homepage": "https://github.com/conversejs/pluggable.js#readme",
   "devDependencies": {
     "@babel/cli": "^7.13.16",
     "@babel/core": "^7.14.0",
