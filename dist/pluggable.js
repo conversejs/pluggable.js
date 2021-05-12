@@ -6,12 +6,6 @@ Object.defineProperty(exports, "__esModule", {
 exports.enable = enable;
 exports["default"] = void 0;
 
-var _isBoolean = _interopRequireDefault(require("lodash-es/isBoolean.js"));
-
-var _isFunction = _interopRequireDefault(require("lodash-es/isFunction.js"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
@@ -32,6 +26,16 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+/*
+       ____  __                        __    __         _
+      / __ \/ /_  __ ___   ___  ____ _/ /_  / /__      (_)____
+     / /_/ / / / / / __ \/ __ \/ __/ / __ \/ / _ \    / / ___/
+    / ____/ / /_/ / /_/ / /_/ / /_/ / /_/ / /  __/   / (__  )
+   /_/   /_/\__,_/\__, /\__, /\__/_/_.___/_/\___(_)_/ /____/
+                 /____//____/                    /___/
+ */
+// Pluggable.js lets you to make your Javascript code pluggable while still
+// keeping sensitive objects and data private through closures.
 // The `PluginSocket` class contains the plugin architecture, and gets
 // created whenever `pluggable.enable(obj);` is called on the object
 // that you want to make pluggable.
@@ -233,6 +237,8 @@ var PluginSocket = /*#__PURE__*/function () {
   }, {
     key: "initializePlugin",
     value: function initializePlugin(plugin) {
+      var _plugin$enabled;
+
       if (!Object.keys(this.allowed_plugins).includes(plugin.__name__)) {
         /* Don't initialize disallowed plugins. */
         return;
@@ -245,7 +251,7 @@ var PluginSocket = /*#__PURE__*/function () {
         return;
       }
 
-      if ((0, _isBoolean["default"])(plugin.enabled) && plugin.enabled || (0, _isFunction["default"])(plugin.enabled) && plugin.enabled(this.plugged) || plugin.enabled == null) {
+      if (typeof plugin.enabled === 'boolean' && plugin.enabled || (_plugin$enabled = plugin.enabled) !== null && _plugin$enabled !== void 0 && _plugin$enabled.call(plugin, this.plugged) || plugin.enabled == null) {
         // isNil
         Object.assign(plugin, this.properties);
 

@@ -10,9 +10,6 @@
 // Pluggable.js lets you to make your Javascript code pluggable while still
 // keeping sensitive objects and data private through closures.
 
-import isBoolean from 'lodash-es/isBoolean.js';
-import isFunction from 'lodash-es/isFunction.js';
-
 
 // The `PluginSocket` class contains the plugin architecture, and gets
 // created whenever `pluggable.enable(obj);` is called on the object
@@ -178,8 +175,8 @@ class PluginSocket {
             */
             return;
         }
-        if (isBoolean(plugin.enabled) && plugin.enabled ||
-            isFunction(plugin.enabled) && plugin.enabled(this.plugged) ||
+        if (typeof plugin.enabled === 'boolean' && plugin.enabled ||
+            plugin.enabled?.(this.plugged) ||
             plugin.enabled == null) { // isNil
 
             Object.assign(plugin, this.properties);
