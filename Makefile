@@ -37,7 +37,7 @@ watchjs: node_modules
 
 .PHONY: dist
 dist: node_modules
-	$(BABEL) --out-file=./dist/pluggable.js src/pluggable.js
+	npm run build
 
 .PHONY: check
 check: dist

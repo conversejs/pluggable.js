@@ -18,7 +18,7 @@ export default [
     output: {
       name: 'pluggable',
       sourcemap: true,
-      file: 'dist/pluggable-with-lodash.js',
+      file: 'dist/pluggable.js',
       format: 'umd'
     },
     plugins
