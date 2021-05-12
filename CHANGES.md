@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.0.1 (2021-05-12)
+
+- Bugfix. Plugin `dependencies` attributes might not be defined
+- Bugfix. `this` value is wrong in overridden functions
+
 ## 3.0.0 (2021-05-12)
 
 - Remove lodash and use native methods instead

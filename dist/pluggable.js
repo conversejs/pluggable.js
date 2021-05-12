@@ -111,13 +111,40 @@
    */
   // Pluggable.js lets you to make your Javascript code pluggable while still
   // keeping sensitive objects and data private through closures.
-  // The `PluginSocket` class contains the plugin architecture, and gets
+  // `wrappedOverride` creates a partially applied wrapper function
+  // that makes sure to set the proper super method when the
+  // overriding method is called. This is done to enable
+  // chaining of plugin methods, all the way up to the
+  // original method.
+  function wrappedOverride(key, value, super_method, default_super) {
+    if (typeof super_method === "function") {
+      if (typeof this.__super__ === "undefined") {
+        /* We're not on the context of the plugged object.
+         * This can happen when the overridden method is called via
+         * an event handler or when it's a constructor.
+         *
+         * In this case, we simply tack on the  __super__ obj.
+         */
+        this.__super__ = default_super;
+      }
+
+      this.__super__[key] = super_method.bind(this);
+    }
+
+    for (var _len = arguments.length, args = new Array(_len > 4 ? _len - 4 : 0), _key = 4; _key < _len; _key++) {
+      args[_key - 4] = arguments[_key];
+    }
+
+    return value.apply(this, args);
+  } // The `PluginSocket` class contains the plugin architecture, and gets
   // created whenever `pluggable.enable(obj);` is called on the object
   // that you want to make pluggable.
   // You can also see it as the thing into which the plugins are plugged.
   // It takes two parameters, first, the object being made pluggable, and
   // then the name by which the pluggable object may be referenced on the
   // __super__ object (inside overrides).
+
+
   var PluginSocket = /*#__PURE__*/function () {
     function PluginSocket(plugged, name) {
       _classCallCheck(this, PluginSocket);
@@ -136,56 +163,26 @@
       this.plugged.__super__[name] = this.plugged;
       this.plugins = {};
       this.initialized_plugins = [];
-    } // `wrappedOverride` creates a partially applied wrapper function
-    // that makes sure to set the proper super method when the
-    // overriding method is called. This is done to enable
-    // chaining of plugin methods, all the way up to the
-    // original method.
+    } // `_overrideAttribute` overrides an attribute on the original object
+    // (the thing being plugged into).
+    //
+    // If the attribute being overridden is a function, then the original
+    // function will still be available via the `__super__` attribute.
+    //
+    // If the same function is being overridden multiple times, then
+    // the original function will be available at the end of a chain of
+    // functions, starting from the most recent override, all the way
+    // back to the original function, each being referenced by the
+    // previous' __super__ attribute.
+    //
+    // For example:
+    //
+    // `plugin2.MyFunc.__super__.myFunc => plugin1.MyFunc.__super__.myFunc => original.myFunc`
 
 
     _createClass(PluginSocket, [{
-      key: "wrappedOverride",
-      value: function wrappedOverride(key, value, super_method, default_super) {
-        if (typeof super_method === "function") {
-          if (typeof this.__super__ === "undefined") {
-            /* We're not on the context of the plugged object.
-             * This can happen when the overridden method is called via
-             * an event handler or when it's a constructor.
-             *
-             * In this case, we simply tack on the  __super__ obj.
-             */
-            this.__super__ = default_super;
-          }
-
-          this.__super__[key] = super_method.bind(this);
-        }
-
-        for (var _len = arguments.length, args = new Array(_len > 4 ? _len - 4 : 0), _key = 4; _key < _len; _key++) {
-          args[_key - 4] = arguments[_key];
-        }
-
-        return value.apply(this, args);
-      } // `_overrideAttribute` overrides an attribute on the original object
-      // (the thing being plugged into).
-      //
-      // If the attribute being overridden is a function, then the original
-      // function will still be available via the `__super__` attribute.
-      //
-      // If the same function is being overridden multiple times, then
-      // the original function will be available at the end of a chain of
-      // functions, starting from the most recent override, all the way
-      // back to the original function, each being referenced by the
-      // previous' __super__ attribute.
-      //
-      // For example:
-      //
-      // `plugin2.MyFunc.__super__.myFunc => plugin1.MyFunc.__super__.myFunc => original.myFunc`
-
-    }, {
       key: "_overrideAttribute",
       value: function _overrideAttribute(key, plugin) {
-        var _this = this;
-
         var value = plugin.overrides[key];
 
         if (typeof value === "function") {
@@ -198,7 +195,7 @@
               args[_key2] = arguments[_key2];
             }
 
-            return _this.wrappedOverride.apply(_this, [key, value, super_method, default_super].concat(args));
+            return wrappedOverride.apply(this, [key, value, super_method, default_super].concat(args));
           };
         } else {
           this.plugged[key] = value;
@@ -207,7 +204,7 @@
     }, {
       key: "_extendObject",
       value: function _extendObject(obj, attributes) {
-        var _this2 = this;
+        var _this = this;
 
         if (!obj.prototype.__super__) {
           obj.prototype.__super__ = {};
@@ -228,7 +225,7 @@
             // chaining of plugin methods, all the way up to the
             // original method.
             var default_super = {};
-            default_super[_this2.name] = _this2.plugged;
+            default_super[_this.name] = _this.plugged;
             var super_method = obj.prototype[key];
 
             obj.prototype[key] = function () {
@@ -236,7 +233,7 @@
                 args[_key3] = arguments[_key3];
               }
 
-              return _this2.wrappedOverride.apply(_this2, [key, value, super_method, default_super].concat(args));
+              return wrappedOverride.apply(this, [key, value, super_method, default_super].concat(args));
             };
           } else {
             obj.prototype[key] = value;
@@ -257,20 +254,23 @@
     }, {
       key: "loadPluginDependencies",
       value: function loadPluginDependencies(plugin) {
-        var _this3 = this;
+        var _plugin$dependencies,
+            _this2 = this;
 
-        plugin.dependencies.forEach(function (name) {
-          var dep = _this3.plugins[name];
+        (_plugin$dependencies = plugin.dependencies) === null || _plugin$dependencies === void 0 ? void 0 : _plugin$dependencies.forEach(function (name) {
+          var dep = _this2.plugins[name];
 
           if (dep) {
-            if (dep.dependencies.includes(plugin.__name__)) {
+            var _dep$dependencies;
+
+            if ((_dep$dependencies = dep.dependencies) !== null && _dep$dependencies !== void 0 && _dep$dependencies.includes(plugin.__name__)) {
               /* FIXME: circular dependency checking is only one level deep. */
               throw "Found a circular dependency between the plugins \"" + plugin.__name__ + "\" and \"" + name + "\"";
             }
 
-            _this3.initializePlugin(dep);
+            _this2.initializePlugin(dep);
           } else {
-            _this3.throwUndefinedDependencyError("Could not find dependency \"" + name + "\" " + "for the plugin \"" + plugin.__name__ + "\". " + "If it's needed, make sure it's loaded by require.js");
+            _this2.throwUndefinedDependencyError("Could not find dependency \"" + name + "\" " + "for the plugin \"" + plugin.__name__ + "\". " + "If it's needed, make sure it's loaded by require.js");
           }
         });
       }
@@ -293,19 +293,19 @@
     }, {
       key: "applyOverrides",
       value: function applyOverrides(plugin) {
-        var _this4 = this;
+        var _this3 = this;
 
         Object.keys(plugin.overrides || {}).forEach(function (key) {
           var override = plugin.overrides[key];
 
           if (_typeof(override) === "object") {
-            if (typeof _this4.plugged[key] === 'undefined') {
-              _this4.throwUndefinedDependencyError("Plugin \"".concat(plugin.__name__, "\" tried to override \"").concat(key, "\" but it's not found."));
+            if (typeof _this3.plugged[key] === 'undefined') {
+              _this3.throwUndefinedDependencyError("Plugin \"".concat(plugin.__name__, "\" tried to override \"").concat(key, "\" but it's not found."));
             } else {
-              _this4._extendObject(_this4.plugged[key], override);
+              _this3._extendObject(_this3.plugged[key], override);
             }
           } else {
-            _this4._overrideAttribute(key, plugin);
+            _this3._overrideAttribute(key, plugin);
           }
         });
       } // `initializePlugin` applies the overrides (if any) defined on all
@@ -365,7 +365,7 @@
     }, {
       key: "initializePlugins",
       value: function initializePlugins() {
-        var _this5 = this;
+        var _this4 = this;
 
         var properties = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
         var whitelist = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
@@ -389,7 +389,7 @@
         }
 
         Object.values(this.allowed_plugins).forEach(function (o) {
-          return _this5.initializePlugin(o);
+          return _this4.initializePlugin(o);
         });
       }
     }]);

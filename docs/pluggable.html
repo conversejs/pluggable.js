@@ -62,6 +62,39 @@ keeping sensitive objects and data private through closures.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
+              <p><code>wrappedOverride</code> creates a partially applied wrapper function
+that makes sure to set the proper super method when the
+overriding method is called. This is done to enable
+chaining of plugin methods, all the way up to the
+original method.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">wrappedOverride</span> (<span class="hljs-params">key, value, super_method, default_super, ...args</span>) </span>{
+    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> super_method === <span class="hljs-string">"function"</span>) {
+        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> <span class="hljs-keyword">this</span>.__super__ === <span class="hljs-string">"undefined"</span>) {
+            <span class="hljs-comment">/* We're not on the context of the plugged object.
+             * This can happen when the overridden method is called via
+             * an event handler or when it's a constructor.
+             *
+             * In this case, we simply tack on the  __super__ obj.
+             */</span>
+            <span class="hljs-keyword">this</span>.__super__ = default_super;
+        }
+        <span class="hljs-keyword">this</span>.__super__[key] = super_method.bind(<span class="hljs-keyword">this</span>);
+    }
+    <span class="hljs-keyword">return</span> value.apply(<span class="hljs-keyword">this</span>, args);
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
               <p>The <code>PluginSocket</code> class contains the plugin architecture, and gets
 created whenever <code>pluggable.enable(obj);</code> is called on the object
 that you want to make pluggable.
@@ -85,39 +118,6 @@ then the name by which the pluggable object may be referenced on the
         <span class="hljs-keyword">this</span>.plugged.__super__[name] = <span class="hljs-keyword">this</span>.plugged;
         <span class="hljs-keyword">this</span>.plugins = {};
         <span class="hljs-keyword">this</span>.initialized_plugins = [];
-    }</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-4">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-4">&#182;</a>
-              </div>
-              <p><code>wrappedOverride</code> creates a partially applied wrapper function
-that makes sure to set the proper super method when the
-overriding method is called. This is done to enable
-chaining of plugin methods, all the way up to the
-original method.</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    wrappedOverride (key, value, super_method, default_super, ...args) {
-        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> super_method === <span class="hljs-string">"function"</span>) {
-            <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> <span class="hljs-keyword">this</span>.__super__ === <span class="hljs-string">"undefined"</span>) {
-                <span class="hljs-comment">/* We're not on the context of the plugged object.
-                 * This can happen when the overridden method is called via
-                 * an event handler or when it's a constructor.
-                 *
-                 * In this case, we simply tack on the  __super__ obj.
-                 */</span>
-                <span class="hljs-keyword">this</span>.__super__ = default_super;
-            }
-            <span class="hljs-keyword">this</span>.__super__[key] = super_method.bind(<span class="hljs-keyword">this</span>);
-        }
-        <span class="hljs-keyword">return</span> value.apply(<span class="hljs-keyword">this</span>, args);
     }</pre></div></div>
             
         </li>
@@ -149,8 +149,9 @@ previous’ <strong>super</strong> attribute.</p>
             <span class="hljs-keyword">const</span> default_super = {};
             default_super[<span class="hljs-keyword">this</span>.name] = <span class="hljs-keyword">this</span>.plugged;
             <span class="hljs-keyword">const</span> super_method = <span class="hljs-keyword">this</span>.plugged[key];
-            <span class="hljs-keyword">this</span>.plugged[key] = <span class="hljs-function">(<span class="hljs-params">...args</span>) =&gt;</span>
-                <span class="hljs-keyword">this</span>.wrappedOverride(key, value, super_method,  default_super, ...args);
+            <span class="hljs-keyword">this</span>.plugged[key] = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">...args</span>) </span>{
+                <span class="hljs-keyword">return</span> wrappedOverride.apply(<span class="hljs-keyword">this</span>, [key, value, super_method,  default_super, ...args]);
+            }
         } <span class="hljs-keyword">else</span> {
             <span class="hljs-keyword">this</span>.plugged[key] = value;
         }
@@ -186,8 +187,9 @@ original method.</p>
             <div class="content"><div class='highlight'><pre>                <span class="hljs-keyword">const</span> default_super = {};
                 default_super[<span class="hljs-keyword">this</span>.name] = <span class="hljs-keyword">this</span>.plugged;
                 <span class="hljs-keyword">const</span> super_method = obj.prototype[key];
-                obj.prototype[key] = <span class="hljs-function">(<span class="hljs-params">...args</span>) =&gt;</span>
-                    <span class="hljs-keyword">this</span>.wrappedOverride(key, value, super_method, default_super, ...args);
+                obj.prototype[key] = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">...args</span>) </span>{
+                    <span class="hljs-keyword">return</span> wrappedOverride.apply(<span class="hljs-keyword">this</span>, [key, value, super_method, default_super, ...args]);
+                }
             } <span class="hljs-keyword">else</span> {
                 obj.prototype[key] = value;
             }
@@ -213,10 +215,10 @@ available.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>    loadPluginDependencies (plugin) {
-        plugin.dependencies.forEach(<span class="hljs-function"><span class="hljs-params">name</span> =&gt;</span> {
+        plugin.dependencies?.forEach(<span class="hljs-function"><span class="hljs-params">name</span> =&gt;</span> {
             <span class="hljs-keyword">const</span> dep = <span class="hljs-keyword">this</span>.plugins[name];
             <span class="hljs-keyword">if</span> (dep) {
-                <span class="hljs-keyword">if</span> (dep.dependencies.includes(plugin.__name__)) {
+                <span class="hljs-keyword">if</span> (dep.dependencies?.includes(plugin.__name__)) {
                     <span class="hljs-comment">/* <span class="hljs-doctag">FIXME:</span> circular dependency checking is only one level deep. */</span>
                     <span class="hljs-keyword">throw</span> <span class="hljs-string">"Found a circular dependency between the plugins \""</span>+
                         plugin.__name__+<span class="hljs-string">"\" and \""</span>+name+<span class="hljs-string">"\""</span>;

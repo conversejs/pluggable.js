@@ -11,6 +11,28 @@
 // keeping sensitive objects and data private through closures.
 
 
+// `wrappedOverride` creates a partially applied wrapper function
+// that makes sure to set the proper super method when the
+// overriding method is called. This is done to enable
+// chaining of plugin methods, all the way up to the
+// original method.
+function wrappedOverride (key, value, super_method, default_super, ...args) {
+    if (typeof super_method === "function") {
+        if (typeof this.__super__ === "undefined") {
+            /* We're not on the context of the plugged object.
+             * This can happen when the overridden method is called via
+             * an event handler or when it's a constructor.
+             *
+             * In this case, we simply tack on the  __super__ obj.
+             */
+            this.__super__ = default_super;
+        }
+        this.__super__[key] = super_method.bind(this);
+    }
+    return value.apply(this, args);
+}
+
+
 // The `PluginSocket` class contains the plugin architecture, and gets
 // created whenever `pluggable.enable(obj);` is called on the object
 // that you want to make pluggable.
@@ -31,27 +53,6 @@ class PluginSocket {
         this.plugged.__super__[name] = this.plugged;
         this.plugins = {};
         this.initialized_plugins = [];
-    }
-
-    // `wrappedOverride` creates a partially applied wrapper function
-    // that makes sure to set the proper super method when the
-    // overriding method is called. This is done to enable
-    // chaining of plugin methods, all the way up to the
-    // original method.
-    wrappedOverride (key, value, super_method, default_super, ...args) {
-        if (typeof super_method === "function") {
-            if (typeof this.__super__ === "undefined") {
-                /* We're not on the context of the plugged object.
-                 * This can happen when the overridden method is called via
-                 * an event handler or when it's a constructor.
-                 *
-                 * In this case, we simply tack on the  __super__ obj.
-                 */
-                this.__super__ = default_super;
-            }
-            this.__super__[key] = super_method.bind(this);
-        }
-        return value.apply(this, args);
     }
 
     // `_overrideAttribute` overrides an attribute on the original object
@@ -75,8 +76,9 @@ class PluginSocket {
             const default_super = {};
             default_super[this.name] = this.plugged;
             const super_method = this.plugged[key];
-            this.plugged[key] = (...args) =>
-                this.wrappedOverride(key, value, super_method,  default_super, ...args);
+            this.plugged[key] = function (...args) {
+                return wrappedOverride.apply(this, [key, value, super_method,  default_super, ...args]);
+            }
         } else {
             this.plugged[key] = value;
         }
@@ -99,8 +101,9 @@ class PluginSocket {
                 const default_super = {};
                 default_super[this.name] = this.plugged;
                 const super_method = obj.prototype[key];
-                obj.prototype[key] = (...args) =>
-                    this.wrappedOverride(key, value, super_method, default_super, ...args);
+                obj.prototype[key] = function (...args) {
+                    return wrappedOverride.apply(this, [key, value, super_method, default_super, ...args]);
+                }
             } else {
                 obj.prototype[key] = value;
             }
