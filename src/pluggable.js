@@ -115,10 +115,10 @@ class PluginSocket {
     // made pluggable), then no error will be thrown if any of these plugins aren't
     // available.
     loadPluginDependencies (plugin) {
-        plugin.dependencies.forEach(name => {
+        plugin.dependencies?.forEach(name => {
             const dep = this.plugins[name];
             if (dep) {
-                if (dep.dependencies.includes(plugin.__name__)) {
+                if (dep.dependencies?.includes(plugin.__name__)) {
                     /* FIXME: circular dependency checking is only one level deep. */
                     throw "Found a circular dependency between the plugins \""+
                         plugin.__name__+"\" and \""+name+"\"";
