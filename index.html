@@ -141,7 +141,7 @@ initialized by calling <code>initializePlugins</code> on the <code>PluginSocket<
         <span class="pl-smi">el</span>.<span class="pl-c1">setAttribute</span>(<span class="pl-s"><span class="pl-pds">'</span>class<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>notification<span class="pl-pds">'</span></span>);
         <span class="pl-smi">el</span>.<span class="pl-c1">appendChild</span>(<span class="pl-c1">document</span>.<span class="pl-c1">createTextNode</span>(text));
         el <span class="pl-k">=</span> <span class="pl-c1">document</span>.<span class="pl-c1">getElementById</span>(<span class="pl-s"><span class="pl-pds">'</span>notifications<span class="pl-pds">'</span></span>).<span class="pl-c1">appendChild</span>(el);
-        <span class="pl-c1">setTimeout</span>(<span class="pl-smi">_</span>.<span class="pl-en">partial</span>(<span class="pl-c1">module</span>.<span class="pl-smi">_fadeOut</span>, el), <span class="pl-c1">3000</span>);
+        setTimeout(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">module</span>._fadeOut(el), <span class="hljs-number">3000</span>);
         <span class="pl-k">return</span> el;
     };
 
