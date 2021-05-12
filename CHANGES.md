@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.0 (Unreleased)
+
+- Remove lodash and use native methods instead
+
 ## 2.0.1 (2019-05-13)
 
 - Import lodash methods individually

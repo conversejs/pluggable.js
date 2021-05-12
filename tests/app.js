@@ -1,6 +1,6 @@
 const app = {};
 
-import pluggable from '../dist/pluggable-with-lodash.js';
+import pluggable from '../dist/pluggable.js';
 
 function initialize (whitelist=[], blacklist=[]) {
     app.pluginSocket.initializePlugins({}, whitelist, blacklist);

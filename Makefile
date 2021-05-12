@@ -15,13 +15,6 @@ FORCE:
 node_modules: package.json package-lock.json
 	npm install
 
-dist/pluggable-with-lodash.js: node_modules src/pluggable.js
-	npm run build
-
-.PHONY: check
-check: dist/pluggable-with-lodash.js
-	$(BABEL-NODE) tests/tests.js | $(FAUCET)
-
 .PHONY: browser-check
 browser-check: node_modules
 	$(BROWSERIFY) -t babelify tests/tests.js | $(BROWSER-RUN) -p 8022
@@ -43,8 +36,12 @@ watchjs: node_modules
 	$(BABEL) --out-file=./dist/pluggable.js --watch=src/pluggable.js
 
 .PHONY: dist
-dist: node_modules dist/pluggable-with-lodash.js
+dist: node_modules
 	$(BABEL) --out-file=./dist/pluggable.js src/pluggable.js
+
+.PHONY: check
+check: dist
+	$(BABEL-NODE) tests/tests.js | $(FAUCET)
 
 .PHONY: release
 release:
