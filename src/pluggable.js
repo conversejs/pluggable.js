@@ -74,8 +74,9 @@ class PluginSocket {
         if (typeof value === "function") {
             const default_super = {};
             default_super[this.name] = this.plugged;
+            const super_method = this.plugged[key];
             this.plugged[key] = (...args) =>
-                this.wrappedOverride(key, value, this.plugged[key],  default_super, ...args);
+                this.wrappedOverride(key, value, super_method,  default_super, ...args);
         } else {
             this.plugged[key] = value;
         }
@@ -97,8 +98,9 @@ class PluginSocket {
                 // original method.
                 const default_super = {};
                 default_super[this.name] = this.plugged;
+                const super_method = obj.prototype[key];
                 obj.prototype[key] = (...args) =>
-                    this.wrappedOverride(key, value, obj.prototype[key], default_super, ...args);
+                    this.wrappedOverride(key, value, super_method, default_super, ...args);
             } else {
                 obj.prototype[key] = value;
             }

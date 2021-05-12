@@ -191,13 +191,14 @@
         if (typeof value === "function") {
           var default_super = {};
           default_super[this.name] = this.plugged;
+          var super_method = this.plugged[key];
 
           this.plugged[key] = function () {
             for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
               args[_key2] = arguments[_key2];
             }
 
-            return _this.wrappedOverride.apply(_this, [key, value, _this.plugged[key], default_super].concat(args));
+            return _this.wrappedOverride.apply(_this, [key, value, super_method, default_super].concat(args));
           };
         } else {
           this.plugged[key] = value;
@@ -228,13 +229,14 @@
             // original method.
             var default_super = {};
             default_super[_this2.name] = _this2.plugged;
+            var super_method = obj.prototype[key];
 
             obj.prototype[key] = function () {
               for (var _len3 = arguments.length, args = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
                 args[_key3] = arguments[_key3];
               }
 
-              return _this2.wrappedOverride.apply(_this2, [key, value, obj.prototype[key], default_super].concat(args));
+              return _this2.wrappedOverride.apply(_this2, [key, value, super_method, default_super].concat(args));
             };
           } else {
             obj.prototype[key] = value;

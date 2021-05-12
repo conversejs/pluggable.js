@@ -21,7 +21,7 @@ browser-check: node_modules
 
 .PHONY: serve
 serve: node_modules
-	$(HTTPSERVE) -p 8080 -c -1
+	$(HTTPSERVE) -p 8080
 
 .PHONY: clean
 clean:

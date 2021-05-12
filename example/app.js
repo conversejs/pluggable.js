@@ -1,7 +1,7 @@
 // An example application, used to demonstrate how pluggable.js can
 // allow a module to be made pluggable.
 (function () {
-    var module = this;
+    var module = {};
 
     // A private method, not available outside the scope of this module.
     module._showNotification = function (text) {
@@ -10,7 +10,7 @@
         el.setAttribute('class', 'notification');
         el.appendChild(document.createTextNode(text));
         el = document.getElementById('notifications').appendChild(el);
-        setTimeout(_.partial(module._fadeOut, el), 3000);
+        setTimeout(() => module._fadeOut(el), 3000);
         return el;
     };
 
@@ -60,7 +60,7 @@
     // Calling `pluggable.enable` on the closured `module` object, will make it
     // pluggable. Additionally, it will get the `pluginSocket` attribute, which
     // refers to the object that the plugins get plugged into.
-    pluggable.enable(module);
+    pluggable.enable(module, 'app');
 
     // Declare the two public methods
     var _public = {
