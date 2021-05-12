@@ -3,28 +3,20 @@
       / /_/ / / / / / __ \/ __ \/ __/ / __ \/ / _ \    / / ___/
      / ____/ / /_/ / /_/ / /_/ / /_/ / /_/ / /  __/   / (__  )
     /_/   /_/\__,_/\__, /\__, /\__/_/_.___/_/\___(_)_/ /____/
-                  /____//____/                    /___/ 
+                  /____//____/                    /___/
 
 [![Travis](https://api.travis-ci.org/conversejs/pluggable.js.png?branch=master)](https://travis-ci.org/jcbrand/pluggable.js)
 
 # Introduction
 
-pluggable.js lets you make your JS project extendable via plugins, while still
-keeping sensitive objects and data private through closures.
+pluggable.js is a tiny library that lets you make your JS project extendable via plugins,
+while still keeping sensitive objects and data private through closures.
 
 It was originally written for [converse.js](https://conversejs.org), to provide
 a plugin architecture that allows 3rd party developers to extend and override
-private objects and [backbone.js](http://backbonejs.org) classes, but it does not
-require nor depend on either library.
+private objects and classes, but it does not require nor depend on either library.
 
-# Size and dependencies
-
-Pluggable.js depends on 8 [lodash](https://lodash.com) functions and
-provides a custom lodash build with only these functions in the
-[3rdparty](https://github.com/jcbrand/pluggable.js/tree/master/3rdparty) directory.
-
-Pluggable.js itself is only 2.5KB when minified and the custom lodash build
-is 26KB when minified (both without gzip compression).
+Pluggable.js is only 2.5KB when minified and uncompressed.
 
 # Documentation
 
@@ -277,4 +269,3 @@ object.
 For issues and requests, please use the project's [issue tracker](https://github.com/jcbrand/pluggable.js/issues).
 
 You can reach me via my website's [contact form](http://opkode.com/contact.html) and you can also [follow me on twitter](https://twitter.com/jcopkode).
-
