@@ -1,5 +1,9 @@
+dist: bionic
 language: node_js
+cache:
+    directories:
+        - node_modules
 node_js:
- - 6
+ - "14"
 script: make check
 sudo: false
